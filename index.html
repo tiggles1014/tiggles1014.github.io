@@ -173,8 +173,8 @@
             background: #ff66aa;
             color: #000;
         }
-        /* Hidden YouTube iframe — real size, off-screen */
-        #ytFrame {
+        /* Hidden YouTube player — real size, off-screen */
+        #ytPlayer {
             position: fixed;
             left: -9999px;
             top: 0;
@@ -225,82 +225,216 @@
         controls=0  → hide YouTube UI
         enablejsapi=1 → lets us send postMessage commands
     -->
-    <iframe id="ytFrame"
-        src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&mute=1&loop=1&playlist=xpmf4u5rkNY&controls=0&enablejsapi=1&rel=0&modestbranding=1"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-    </iframe>
+    <div id="ytPlayer"></div>
     <script>
-        const ytFrame       = document.getElementById('ytFrame');
+        // Load the YouTube IFrame Player API asynchronously
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        const playlist = [
+            { "title": "Caramelldansen", "artist": "Caramella Girls", "ytId": "PDJLvF1dUek" },
+            { "title": "Renai Circulation (English Cover) [2012 TV Size]", "artist": "Lizz Robinett, L-Train, Y. Chang", "ytId": "o874A-IsrvQ" },
+            { "title": "Pretty Scene Girl!", "artist": "Clover!, DulaWry", "ytId": "P8F1RjcWLjM" },
+            { "title": "doodle", "artist": "Zachz Winner", "ytId": "DYgER2Tq50o" },
+            { "title": "I'm so fucked up please help me", "artist": "Rebzyyx", "ytId": "hWm5PdmPgbs" },
+            { "title": "hunter eyes", "artist": "laydownrot", "ytId": "AVPbuiJ3-xQ" },
+            { "title": "Lucky", "artist": "Lucky Twice", "ytId": "2UuXld2s6g0" },
+            { "title": "1tap", "artist": "Chanelfather", "ytId": "1GhwgjNN1H0" },
+            { "title": "SugarCrash!", "artist": "ElyOtto", "ytId": "6uaq8GJJxAQ" },
+            { "title": "LESBIAN PONIES WITH WEAPONS", "artist": "Vylet Pony", "ytId": "UCAisUe6-VA" },
+            { "title": "Toxic Love!", "artist": "Clover!, NXTY", "ytId": "MVypbjxD6GU" },
+            { "title": "pretty lil psycho", "artist": "Clover!, disoc8", "ytId": "B5lx9ecnpxw" },
+            { "title": "It's Not Like I Like You!!", "artist": "Static-P", "ytId": "tOzOD-82mW0" },
+            { "title": "#goonnshit", "artist": "Kevinhilfiger, osquinn", "ytId": "NVJNzydEefc" },
+            { "title": "nostalgia will kill me one day", "artist": "rufflws, oktxy, scarby", "ytId": "D9tBmUXTGtI" },
+            { "title": "makes you happy", "artist": "hoshie star, Kaneda7, Rebzyyx", "ytId": "O9_vX7vMkes" },
+            { "title": "do you like it", "artist": "hoshie star, zeija", "ytId": "F5xRvbYrqYE" },
+            { "title": "kiss me!", "artist": "txtsu", "ytId": "W-BqNjA6W0c" },
+            { "title": "feels good", "artist": "yen archive, aidenchrist", "ytId": "yhzu9ebHcYQ" },
+            { "title": "Bright", "artist": "saturn", "ytId": "4E-p2UzGT9I" },
+            { "title": "Faneto", "artist": "Chief Keef", "ytId": "XuEx6lNHZjM" },
+            { "title": "qpid", "artist": "saturn", "ytId": "7jJByBGCbz0" },
+            { "title": "letz 5hake", "artist": "saturn", "ytId": "_AJUOBnMDzI" },
+            { "title": "i hate it here", "artist": "osquinn", "ytId": "5IWw8ox6u40" },
+            { "title": "meangirls", "artist": "saturn", "ytId": "EgEar9iBFCU" },
+            { "title": "leaveamsg", "artist": "morgue", "ytId": "qNU6aISOOjE" },
+            { "title": "Days", "artist": "saturn, osquinn", "ytId": "xHR-wHSLga4" },
+            { "title": "eat ur heart", "artist": "luvwillow", "ytId": "oLriHy6zaO8" },
+            { "title": "who was", "artist": "Wido", "ytId": "4u8Evmukllk" },
+            { "title": "Less Intro", "artist": "saturn", "ytId": "0YSBgaTOHOE" }
+        ];
+
         const progressBar   = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
         const playPauseBtn  = document.getElementById('playPauseBtn');
         const volBtn        = document.getElementById('volBtn');
         const unmuteBanner  = document.getElementById('unmuteBanner');
-        const songDuration = 104;
+        
+        let player;
         let isPlaying = true;
         let isMuted   = true;
         let isBoosted = false;
-        let progress  = 0;
-        // ── PostMessage helpers ─────────────────────────────────────────
-        function ytCmd(func, args) {
-            ytFrame.contentWindow.postMessage(
-                JSON.stringify({ event: 'command', func, args: args || [] }),
-                '*'
-            );
+        
+        let currentTrack = null;
+        let playedTracks = [];
+
+        // ── YouTube IFrame Player API Initialization ────────────────────
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                height: '270',
+                width: '480',
+                videoId: playlist[0].ytId,
+                playerVars: {
+                    'autoplay': 1,
+                    'mute': 1,
+                    'controls': 0,
+                    'disablejsapi': 1,
+                    'rel': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
+
+        function onPlayerReady(event) {
+            playRandomTrack();
+        }
+
+        function onPlayerStateChange(event) {
+            // Pick a new random song when the current one ends
+            if (event.data === YT.PlayerState.ENDED) {
+                playRandomTrack();
+            }
+        }
+
+        // ── Track Selection ─────────────────────────────────────────────
+        function playRandomTrack() {
+            if (playlist.length === 0) return;
+            
+            // Avoid repeating songs until all have been played
+            if (playedTracks.length >= playlist.length) {
+                playedTracks = [];
+            }
+            
+            let availableTracks = playlist.filter(track => !playedTracks.includes(track.ytId));
+            if (availableTracks.length === 0) {
+                availableTracks = playlist;
+                playedTracks = [];
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableTracks.length);
+            const track = availableTracks[randomIndex];
+            playedTracks.push(track.ytId);
+            
+            currentTrack = track;
+            
+            // Update UI with details
+            document.querySelector('.song-title').textContent = track.title;
+            document.querySelector('.song-meta').innerHTML = `${track.artist} &nbsp;·&nbsp; 0:00`;
+            document.getElementById('currentTime').textContent = '0:00';
+            document.getElementById('duration').textContent = '0:00';
+            progressBar.style.width = '0%';
+            
+            if (player && player.loadVideoById) {
+                player.loadVideoById({
+                    videoId: track.ytId,
+                    startSeconds: 0
+                });
+                
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸ Pause';
+                
+                if (isMuted) {
+                    player.mute();
+                } else {
+                    player.unMute();
+                    player.setVolume(isBoosted ? 100 : 80);
+                }
+            }
+        }
+
         // ── Unmute on first click ───────────────────────────────────────
         function unmute() {
-            ytCmd('unMute');
-            ytCmd('setVolume', [80]);
-            isMuted = false;
-            unmuteBanner.classList.add('hidden');
+            if (player && player.unMute) {
+                player.unMute();
+                player.setVolume(isBoosted ? 100 : 80);
+                isMuted = false;
+                unmuteBanner.classList.add('hidden');
+            }
         }
-        // Also unmute if user clicks anywhere else on the page
+        
         document.body.addEventListener('click', function onFirstClick(e) {
             if (isMuted) {
                 unmute();
             }
         }, { once: false });
+
         // ── Play / Pause ────────────────────────────────────────────────
         function togglePlay() {
+            if (!player || !player.pauseVideo) return;
             if (isPlaying) {
-                ytCmd('pauseVideo');
+                player.pauseVideo();
                 isPlaying = false;
                 playPauseBtn.textContent = '▶ Play';
             } else {
-                ytCmd('playVideo');
+                player.playVideo();
                 isPlaying = true;
                 playPauseBtn.textContent = '⏸ Pause';
             }
         }
+
         // ── Volume boost ────────────────────────────────────────────────
         function toggleBoost() {
+            if (!player || !player.setVolume) return;
             if (isBoosted) {
-                ytCmd('setVolume', [80]);
+                player.setVolume(80);
                 isBoosted = false;
                 volBtn.textContent = '🔊 Ultra Loud';
             } else {
-                ytCmd('setVolume', [100]);
+                player.setVolume(100);
                 isBoosted = true;
                 volBtn.textContent = '🔇 Normal';
             }
         }
-        // ── Progress bar (simulated — iframe can't report time easily) ──
+
+        // ── Helper: Format seconds to M:SS ──────────────────────────────
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds === null) return "0:00";
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        // ── Progress Bar Update (Accurate from YouTube player) ──────────
         setInterval(() => {
-            if (!isPlaying) return;
-            progress = (progress + 1) % songDuration;
-            progressBar.style.width = (progress / songDuration * 100) + '%';
-            const min = Math.floor(progress / 60);
-            const sec = Math.floor(progress % 60);
-            currentTimeEl.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }, 1000);
+            if (player && player.getCurrentTime && isPlaying) {
+                const current = player.getCurrentTime();
+                const duration = player.getDuration();
+                if (duration > 0) {
+                    progressBar.style.width = (current / duration * 100) + '%';
+                    currentTimeEl.textContent = formatTime(current);
+                    document.getElementById('duration').textContent = formatTime(duration);
+                    
+                    const songMeta = document.querySelector('.song-meta');
+                    if (songMeta && currentTrack) {
+                        songMeta.innerHTML = `${currentTrack.artist} &nbsp;·&nbsp; ${formatTime(duration)}`;
+                    }
+                }
+            }
+        }, 500);
+
         // ── Click progress bar to seek ──────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
-            const ratio  = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
-            progress = Math.floor(ratio * songDuration);
-            ytCmd('seekTo', [progress, true]);
+            if (player && player.getDuration) {
+                const ratio  = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
+                const newTime = ratio * player.getDuration();
+                player.seekTo(newTime, true);
+            }
         });
     </script>
 </body>
