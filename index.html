@@ -90,6 +90,7 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(to right, #ff66aa, #cc44ff);
+            transition: width 0.9s linear;
         }
         
         .time {
@@ -113,11 +114,20 @@
             padding: 12px 26px;
             font-size: 1.2rem;
             cursor: pointer;
+            font-family: 'VT323', monospace;
+            transition: background 0.15s, color 0.15s;
         }
         
         button:hover {
             background: #ff66aa;
             color: #000;
+        }
+        .flash {
+            animation: flashPulse 0.7s ease-out;
+        }
+        @keyframes flashPulse {
+            0%   { filter: saturate(3) brightness(1.4); }
+            100% { filter: saturate(1) brightness(1); }
         }
         
         .footer {
@@ -125,6 +135,14 @@
             bottom: 35px;
             font-size: 1.2rem;
             color: #996688;
+        }
+        /* YouTube iframe hidden offscreen */
+        #ytplayer {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1px;
+            height: 1px;
         }
     </style>
 </head>
@@ -155,7 +173,7 @@
             </div>
             
             <div class="controls">
-                <button onclick="togglePlay()">⏸️ / ▶️</button>
+                <button id="playPauseBtn" onclick="togglePlay()">⏸ PAUSE</button>
                 <button onclick="boostVolume()">🔊 ULTRA LOUD</button>
             </div>
         </div>
@@ -164,73 +182,136 @@
             every 30 seconds a special surprise 💨🐶
         </div>
     </div>
-
-    <!-- Main Song -->
-    <iframe id="music" 
-            width="0" height="0" 
-            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY" 
-            frameborder="0" 
-            allow="autoplay; encrypted-media" 
-            allowfullscreen>
-    </iframe>
-
-    <!-- Your GitHub Bark Fart Sound -->
+    <!-- YouTube IFrame API -->
+    <div id="ytplayer"></div>
+    <!-- Bark Fart Sound -->
     <audio id="barkFart" preload="auto">
         <source src="https://raw.githubusercontent.com/tiggles/tiggles1014.github.io/main/bark-fart-made-with-Voicemod.mp3" type="audio/mpeg">
     </audio>
-
+    <!-- Load YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const mainPlayer = document.getElementById('music');
-        const barkAudio = document.getElementById('barkFart');
-        const progressBar = document.getElementById('progressBar');
+        const barkAudio    = document.getElementById('barkFart');
+        const progressBar  = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
-        
-        let isPlaying = true;
-        let progress = 0;
-        const songDuration = 104;
-        
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const songDuration = 104; // 1:44 in seconds
+        let isPlaying  = false;   // starts false; set true once API is ready
+        let progress   = 0;
+        let ytPlayer   = null;
+        let isBoosted  = false;
+        // ── YouTube IFrame API ──────────────────────────────────────────────
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('ytplayer', {
+                videoId: 'xpmf4u5rkNY',
+                playerVars: {
+                    autoplay: 1,
+                    loop:     1,
+                    playlist: 'xpmf4u5rkNY',
+                    controls: 0,
+                    modestbranding: 1,
+                },
+                events: {
+                    onReady: onPlayerReady,
+                    onStateChange: onPlayerStateChange,
+                }
+            });
+        }
+        function onPlayerReady(event) {
+            event.target.setVolume(80);
+            event.target.playVideo();
+            isPlaying = true;
+            updatePlayPauseBtn();
+            // Start simulated progress bar
+            setInterval(tickProgress, 1000);
+            // First bark after 4.5 s
+            setTimeout(playBarkFart, 4500);
+            // Bark every 30 s
+            setInterval(playBarkFart, 30000);
+        }
+        function onPlayerStateChange(event) {
+            // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                isPlaying = false;
+                if (event.data === YT.PlayerState.ENDED) {
+                    // Loop: restart
+                    ytPlayer.seekTo(0);
+                    ytPlayer.playVideo();
+                }
+            }
+            updatePlayPauseBtn();
+        }
+        // ── Controls ────────────────────────────────────────────────────────
         function togglePlay() {
-            isPlaying = !isPlaying;
+            if (!ytPlayer) return;
             if (isPlaying) {
-                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
+                ytPlayer.pauseVideo();
             } else {
-                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
+                ytPlayer.playVideo();
             }
         }
-        
-        function boostVolume() {
-            document.body.style.filter = "saturate(1.8)";
-            setTimeout(() => document.body.style.filter = "", 700);
+        function updatePlayPauseBtn() {
+            playPauseBtn.textContent = isPlaying ? '⏸ PAUSE' : '▶ PLAY';
         }
-        
+        function boostVolume() {
+            if (!ytPlayer) return;
+            if (isBoosted) {
+                ytPlayer.setVolume(80);
+                isBoosted = false;
+                boostVolume.btn = '🔊 ULTRA LOUD';
+                document.querySelector('button:last-child').textContent = '🔊 ULTRA LOUD';
+            } else {
+                ytPlayer.setVolume(100);
+                isBoosted = true;
+                document.querySelector('button:last-child').textContent = '🔇 NORMAL';
+                // Flash effect
+                document.body.classList.add('flash');
+                document.body.addEventListener('animationend', () => {
+                    document.body.classList.remove('flash');
+                }, { once: true });
+            }
+        }
+        // ── Bark Fart ───────────────────────────────────────────────────────
         function playBarkFart() {
             barkAudio.currentTime = 0;
             barkAudio.volume = 0.95;
             barkAudio.play().catch(() => {});
         }
-        
-        function updateProgress() {
+        // ── Progress Bar (simulated, syncs on loop) ─────────────────────────
+        function tickProgress() {
             if (!isPlaying) return;
-            progress = (progress + 1) % songDuration;
+            // Try to sync with actual YouTube time if available
+            if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+                try {
+                    const actual = ytPlayer.getCurrentTime();
+                    if (actual > 0) {
+                        progress = actual % songDuration;
+                    } else {
+                        progress = (progress + 1) % songDuration;
+                    }
+                } catch(e) {
+                    progress = (progress + 1) % songDuration;
+                }
+            } else {
+                progress = (progress + 1) % songDuration;
+            }
             const percentage = (progress / songDuration) * 100;
-            progressBar.style.width = percentage + "%";
-            
+            progressBar.style.width = percentage + '%';
             const min = Math.floor(progress / 60);
             const sec = Math.floor(progress % 60);
             currentTimeEl.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
         }
-        
-        // Bark Fart every 30 seconds
-        setInterval(playBarkFart, 30000);
-        
-        window.addEventListener('load', () => {
-            setInterval(updateProgress, 1000);
-            
-            setTimeout(() => {
-                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
-            }, 800);
-            
-            setTimeout(playBarkFart, 4500); // first bark
+        // ── Click progress bar to seek ───────────────────────────────────────
+        document.getElementById('progressContainer').addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const ratio = (e.clientX - rect.left) / rect.width;
+            const seekTo = ratio * songDuration;
+            progress = seekTo;
+            if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+                ytPlayer.seekTo(seekTo, true);
+            }
         });
     </script>
 </body>
