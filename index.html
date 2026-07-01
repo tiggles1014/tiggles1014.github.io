@@ -36,43 +36,37 @@
             background: rgba(15, 0, 25, 0.78);
             z-index: -2;
         }
-        /* ── Click-to-start splash ── */
-        #startScreen {
+        /* ── Unmute banner ── */
+        #unmuteBanner {
             position: fixed;
-            inset: 0;
-            z-index: 999;
+            top: 0; left: 0; right: 0;
+            z-index: 500;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(5, 0, 12, 0.88);
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 80, 150, 0.18);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 102, 170, 0.35);
             cursor: pointer;
-            transition: opacity 0.6s ease;
+            transition: opacity 0.5s ease;
         }
-        #startScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #startScreen .play-btn {
-            width: 90px;
-            height: 90px;
-            border: 3px solid #ff66aa;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.4rem;
-            color: #ff99cc;
-            margin-bottom: 20px;
-            transition: background 0.2s;
-        }
-        #startScreen:hover .play-btn {
-            background: rgba(255, 102, 170, 0.2);
-        }
-        #startScreen p {
-            font-size: 1.1rem;
-            color: #cc88aa;
+        #unmuteBanner.hidden { opacity: 0; pointer-events: none; }
+        #unmuteBanner span {
+            font-size: 0.9rem;
             letter-spacing: 2px;
+            color: #ffccdd;
+        }
+        #unmuteBanner .pulse {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #ff66aa;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
         }
         
         .content {
@@ -113,20 +107,31 @@
         }
         
         .now-playing {
-            font-size: 1rem;
+            font-size: 0.85rem;
             letter-spacing: 3px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             color: #ffbbdd;
             text-transform: uppercase;
         }
+        .song-title {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            color: #ff99cc;
+            font-weight: 400;
+        }
+        .song-meta {
+            font-size: 0.9rem;
+            color: #cc77aa;
+            margin-bottom: 4px;
+        }
         
         .progress-container {
-            height: 8px;
+            height: 6px;
             background: #330022;
             margin: 20px 0;
             position: relative;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         
         .progress-bar {
@@ -134,29 +139,29 @@
             width: 0%;
             background: linear-gradient(to right, #ff66aa, #cc44ff);
             transition: width 0.9s linear;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         
         .time {
             display: flex;
             justify-content: space-between;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: #bb77aa;
         }
         
         .controls {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            margin-top: 25px;
+            gap: 16px;
+            margin-top: 22px;
         }
         
         button {
             background: transparent;
             border: 2px solid #ff66aa;
             color: #ffccdd;
-            padding: 10px 24px;
-            font-size: 0.95rem;
+            padding: 9px 22px;
+            font-size: 0.88rem;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             letter-spacing: 1px;
@@ -168,33 +173,26 @@
             background: #ff66aa;
             color: #000;
         }
-        .flash {
-            animation: flashPulse 0.7s ease-out;
-        }
-        @keyframes flashPulse {
-            0%   { filter: saturate(3) brightness(1.4); }
-            100% { filter: saturate(1) brightness(1); }
-        }
-        /* YouTube player: real size but visually hidden */
-        #ytplayer {
+        /* Hidden YouTube iframe — real size, off-screen */
+        #ytFrame {
             position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 2px;
-            height: 2px;
-            opacity: 0;
+            left: -9999px;
+            top: 0;
+            width: 480px;
+            height: 270px;
             pointer-events: none;
         }
     </style>
 </head>
 <body>
+    <!-- Muted autoplay starts immediately; user clicks this to unmute -->
+    <div id="unmuteBanner" onclick="unmute()">
+        <div class="pulse"></div>
+        <span>🎵 CLICK ANYWHERE TO UNMUTE</span>
+        <div class="pulse"></div>
+    </div>
     <div class="background"></div>
     <div class="overlay"></div>
-    <!-- Click-to-start overlay (satisfies browser autoplay policy) -->
-    <div id="startScreen" onclick="startEverything()">
-        <div class="play-btn">▶</div>
-        <p>click to play</p>
-    </div>
     
     <div class="content">
         <h1>I LOVE YOU AOUD</h1>
@@ -202,12 +200,8 @@
         
         <div class="player">
             <div class="now-playing">Now Playing</div>
-            <div style="font-size: 1.4rem; margin-bottom: 6px; color: #ff99cc; font-weight: 400;">
-                why didn't you stop me?
-            </div>
-            <div style="font-size: 0.95rem; color: #cc77aa; margin-bottom: 4px;">
-                pupsies &nbsp;·&nbsp; 1:44
-            </div>
+            <div class="song-title">why didn't you stop me?</div>
+            <div class="song-meta">pupsies &nbsp;·&nbsp; 1:44</div>
             
             <div class="progress-container" id="progressContainer">
                 <div class="progress-bar" id="progressBar"></div>
@@ -220,113 +214,93 @@
             
             <div class="controls">
                 <button id="playPauseBtn" onclick="togglePlay()">⏸ Pause</button>
-                <button id="volBtn" onclick="boostVolume()">🔊 Ultra Loud</button>
+                <button id="volBtn" onclick="toggleBoost()">🔊 Ultra Loud</button>
             </div>
         </div>
     </div>
-    <!-- YouTube IFrame API target -->
-    <div id="ytplayer"></div>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!--
+        autoplay=1  → starts playing immediately (muted, so browser allows it)
+        mute=1      → muted = browser allows autoplay
+        loop=1      → loops forever
+        controls=0  → hide YouTube UI
+        enablejsapi=1 → lets us send postMessage commands
+    -->
+    <iframe id="ytFrame"
+        src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&mute=1&loop=1&playlist=xpmf4u5rkNY&controls=0&enablejsapi=1&rel=0&modestbranding=1"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+    </iframe>
     <script>
+        const ytFrame       = document.getElementById('ytFrame');
         const progressBar   = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
         const playPauseBtn  = document.getElementById('playPauseBtn');
         const volBtn        = document.getElementById('volBtn');
-        const startScreen   = document.getElementById('startScreen');
-        const songDuration = 104; // seconds
-        let isPlaying = false;
-        let ytPlayer  = null;
+        const unmuteBanner  = document.getElementById('unmuteBanner');
+        const songDuration = 104;
+        let isPlaying = true;
+        let isMuted   = true;
         let isBoosted = false;
-        let started   = false;
-        // ── YouTube IFrame API ──────────────────────────────────────────
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('ytplayer', {
-                videoId: 'xpmf4u5rkNY',
-                playerVars: {
-                    autoplay:       0,   // we'll call playVideo() after user click
-                    loop:           1,
-                    playlist:       'xpmf4u5rkNY',
-                    controls:       0,
-                    modestbranding: 1,
-                    rel:            0,
-                },
-                events: {
-                    onReady:       onPlayerReady,
-                    onStateChange: onPlayerStateChange,
-                }
-            });
+        let progress  = 0;
+        // ── PostMessage helpers ─────────────────────────────────────────
+        function ytCmd(func, args) {
+            ytFrame.contentWindow.postMessage(
+                JSON.stringify({ event: 'command', func, args: args || [] }),
+                '*'
+            );
         }
-        function onPlayerReady() {
-            ytPlayer.setVolume(80);
-            // If the user already clicked before the API was ready, start now
-            if (started) ytPlayer.playVideo();
+        // ── Unmute on first click ───────────────────────────────────────
+        function unmute() {
+            ytCmd('unMute');
+            ytCmd('setVolume', [80]);
+            isMuted = false;
+            unmuteBanner.classList.add('hidden');
         }
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true;
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                isPlaying = false;
-                if (event.data === YT.PlayerState.ENDED) {
-                    ytPlayer.seekTo(0);
-                    ytPlayer.playVideo();
-                }
+        // Also unmute if user clicks anywhere else on the page
+        document.body.addEventListener('click', function onFirstClick(e) {
+            if (isMuted) {
+                unmute();
             }
-            updatePlayPauseBtn();
-        }
-        // ── Start on first click ────────────────────────────────────────
-        function startEverything() {
-            started = true;
-            startScreen.classList.add('hidden');
-            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                ytPlayer.playVideo();
-            }
-            setInterval(tickProgress, 1000);
-        }
-        // ── Controls ────────────────────────────────────────────────────
+        }, { once: false });
+        // ── Play / Pause ────────────────────────────────────────────────
         function togglePlay() {
-            if (!ytPlayer) return;
             if (isPlaying) {
-                ytPlayer.pauseVideo();
+                ytCmd('pauseVideo');
+                isPlaying = false;
+                playPauseBtn.textContent = '▶ Play';
             } else {
-                ytPlayer.playVideo();
+                ytCmd('playVideo');
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸ Pause';
             }
         }
-        function updatePlayPauseBtn() {
-            playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
-        }
-        function boostVolume() {
-            if (!ytPlayer) return;
+        // ── Volume boost ────────────────────────────────────────────────
+        function toggleBoost() {
             if (isBoosted) {
-                ytPlayer.setVolume(80);
+                ytCmd('setVolume', [80]);
                 isBoosted = false;
                 volBtn.textContent = '🔊 Ultra Loud';
             } else {
-                ytPlayer.setVolume(100);
+                ytCmd('setVolume', [100]);
                 isBoosted = true;
                 volBtn.textContent = '🔇 Normal';
-                document.body.classList.add('flash');
-                document.body.addEventListener('animationend', () => {
-                    document.body.classList.remove('flash');
-                }, { once: true });
             }
         }
-        // ── Progress Bar ────────────────────────────────────────────────
-        function tickProgress() {
-            if (!isPlaying || !ytPlayer) return;
-            let t = 0;
-            try { t = ytPlayer.getCurrentTime() || 0; } catch(e) {}
-            const progress = t % songDuration;
+        // ── Progress bar (simulated — iframe can't report time easily) ──
+        setInterval(() => {
+            if (!isPlaying) return;
+            progress = (progress + 1) % songDuration;
             progressBar.style.width = (progress / songDuration * 100) + '%';
             const min = Math.floor(progress / 60);
             const sec = Math.floor(progress % 60);
             currentTimeEl.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
-        // ── Click to seek ───────────────────────────────────────────────
+        }, 1000);
+        // ── Click progress bar to seek ──────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
-            if (!ytPlayer) return;
             const ratio  = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
-            const seekTo = ratio * songDuration;
-            ytPlayer.seekTo(seekTo, true);
+            progress = Math.floor(ratio * songDuration);
+            ytCmd('seekTo', [progress, true]);
         });
     </script>
 </body>
