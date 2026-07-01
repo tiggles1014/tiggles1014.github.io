@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aoud.lol</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Press Start 2P', system-ui;
+            color: #fff;
+        }
+        
+        /* Background Image */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://grok.x.ai/attachments/image.png'); /* Replace with your hosted image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.7) contrast(1.1);
+            z-index: -2;
+        }
+        
+        /* Dark overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+            z-index: -1;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 5rem;
+            text-shadow: 0 0 20px #ff00ff, 
+                         0 0 40px #00ffff;
+            margin-bottom: 1rem;
+            letter-spacing: 4px;
+            animation: glitch 1s infinite alternate;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            text-shadow: 0 0 10px #000;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 2rem;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', system-ui;
+            font-size: 1rem;
+            background: transparent;
+            color: #fff;
+            border: 3px solid #ff00ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            background: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(3px, -3px); }
+            60% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        /* Audio visualizer style */
+        .visualizer {
+            width: 300px;
+            height: 60px;
+            background: rgba(255,0,255,0.2);
+            border: 2px solid #00ffff;
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="overlay"></div>
+    
+    <div class="content">
+        <h1>aoud.lol</h1>
+        <p>why didn't you stop me?</p>
+        
+        <div class="visualizer">
+            🔊 LOUD AS FUCK MODE ACTIVATED 🔊
+        </div>
+        
+        <div class="controls">
+            <button onclick="toggleMusic()">PLAY / PAUSE</button>
+            <button onclick="window.location.reload()">RELOAD CHAOS</button>
+        </div>
+        
+        <p style="margin-top: 3rem; font-size: 0.9rem; opacity: 0.7;">
+            cranked to max volume • loop enabled
+        </p>
+    </div>
+
+    <!-- Hidden YouTube embed for the song -->
+    <iframe id="youtube-player" 
+            width="0" 
+            height="0" 
+            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+    </iframe>
+
+    <script>
+        // The song: why didn't you stop me? by pupsies
+        const youtubeEmbed = document.getElementById('youtube-player');
+        
+        function toggleMusic() {
+            if (youtubeEmbed.src.includes('autoplay=1')) {
+                youtubeEmbed.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
+            } else {
+                youtubeEmbed.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100";
+            }
+        }
+        
+        // Force loud autoplay on load
+        window.onload = function() {
+            console.log("%c🔊 WHY DIDN'T YOU STOP ME? by pupsies - MAX VOLUME", 
+                "color: #ff00ff; font-size: 20px; font-family: monospace;");
+            
+            // Try to unmute and play loud
+            setTimeout(() => {
+                try {
+                    youtubeEmbed.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                } catch(e) {}
+            }, 1500);
+        };
+        
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleMusic();
+            }
+        });
+    </script>
+</body>
+</html>
