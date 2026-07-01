@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>aoud.lol</title>
+    <title>I love you aoud</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         
@@ -18,7 +18,6 @@
             background: #0a0a0a;
         }
         
-        /* Background */
         .background {
             position: absolute;
             top: 0; left: 0;
@@ -34,7 +33,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(10, 0, 20, 0.75);
+            background: rgba(15, 0, 25, 0.78);
             z-index: -2;
         }
         
@@ -50,35 +49,34 @@
         }
         
         h1 {
-            font-size: 5.5rem;
-            letter-spacing: 6px;
+            font-size: 5.2rem;
+            letter-spacing: 4px;
             color: #ff99cc;
-            text-shadow: 3px 3px 0 #000,
-                        -2px -2px 0 #000;
-            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #000, -2px -2px 0 #000;
+            margin-bottom: 8px;
         }
         
         .subtitle {
-            font-size: 1.8rem;
-            color: #cc88ff;
+            font-size: 2.1rem;
+            color: #ff77bb;
             margin-bottom: 50px;
         }
         
         /* Mini Player */
         .player {
-            width: 420px;
-            background: rgba(20, 0, 30, 0.95);
+            width: 440px;
+            background: rgba(25, 5, 35, 0.96);
             border: 4px solid #ff66aa;
-            padding: 25px;
+            padding: 25px 30px;
             border-radius: 8px;
-            box-shadow: 0 0 30px rgba(255, 102, 170, 0.4);
+            box-shadow: 0 0 35px rgba(255, 102, 170, 0.5);
             margin-bottom: 40px;
         }
         
         .now-playing {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: #ffccdd;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #ffbbdd;
         }
         
         .progress-container {
@@ -93,31 +91,29 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(to right, #ff66aa, #cc44ff);
-            transition: width 0.3s;
         }
         
         .time {
             display: flex;
             justify-content: space-between;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #bb77aa;
         }
         
         .controls {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
+            gap: 25px;
+            margin-top: 25px;
         }
         
         button {
             background: transparent;
             border: 3px solid #ff66aa;
             color: #ffccdd;
-            padding: 12px 24px;
-            font-size: 1.1rem;
+            padding: 12px 26px;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.2s;
         }
         
         button:hover {
@@ -127,8 +123,8 @@
         
         .footer {
             position: absolute;
-            bottom: 30px;
-            font-size: 1.1rem;
+            bottom: 35px;
+            font-size: 1.2rem;
             color: #996688;
         }
     </style>
@@ -138,17 +134,17 @@
     <div class="overlay"></div>
     
     <div class="content">
-        <h1>AOUD.LOL</h1>
+        <h1>I LOVE YOU AOUD</h1>
         <div class="subtitle">pupsies</div>
         
         <!-- Mini Player -->
         <div class="player">
-            <div class="now-playing">NOW PLAYING</div>
-            <div style="font-size: 1.5rem; margin-bottom: 10px; color: #ff99cc;">
+            <div class="now-playing">NOW BARKING</div>
+            <div style="font-size: 1.55rem; margin-bottom: 10px; color: #ff99cc;">
                 why didn't you stop me?
             </div>
-            <div style="font-size: 1rem; color: #cc77aa; margin-bottom: 20px;">
-                pupsies • i took too many ibuprofen
+            <div style="font-size: 1.05rem; color: #cc77aa;">
+                pupsies • 1:44
             </div>
             
             <div class="progress-container" id="progressContainer">
@@ -162,16 +158,16 @@
             
             <div class="controls">
                 <button onclick="togglePlay()">⏸️ / ▶️</button>
-                <button onclick="boostVolume()">🔊 LOUDER</button>
+                <button onclick="boostVolume()">🔊 MAX</button>
             </div>
         </div>
         
         <div class="footer">
-            turn your volume up • headphones on
+            every 30 seconds a special surprise 💨🐶
         </div>
     </div>
 
-    <!-- YouTube Player -->
+    <!-- Main Song -->
     <iframe id="music" 
             width="0" height="0" 
             src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY" 
@@ -180,59 +176,73 @@
             allowfullscreen>
     </iframe>
 
+    <!-- Bark Fart Sound -->
+    <audio id="barkFart" preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"> <!-- Placeholder - replace with real bark fart URL if needed -->
+    </audio>
+
     <script>
-        const player = document.getElementById('music');
+        const mainPlayer = document.getElementById('music');
+        const barkAudio = document.getElementById('barkFart');
         const progressBar = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
         
         let isPlaying = true;
         let progress = 0;
-        const songDuration = 104; // 1:44 in seconds
+        const songDuration = 104; // seconds
+        
+        // Real bark fart sound (public domain / free meme sound)
+        // You can replace this URL with a direct MP3 link
+        barkAudio.src = "https://assets.mixkit.co/sfx/preview/2357/2357.wav"; // fart-like sound (adjust if needed)
         
         function togglePlay() {
             isPlaying = !isPlaying;
             if (isPlaying) {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
+                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
             } else {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
+                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
             }
         }
         
         function boostVolume() {
-            document.body.style.filter = "saturate(1.6) contrast(1.2)";
-            setTimeout(() => document.body.style.filter = "", 600);
-            alert("🔊 MAX VOLUME ACTIVATED");
+            document.body.style.filter = "saturate(1.8)";
+            setTimeout(() => document.body.style.filter = "", 700);
         }
         
-        // Fake progress bar (real sync is complex without YouTube API)
+        function playBarkFart() {
+            barkAudio.currentTime = 0;
+            barkAudio.volume = 0.9;
+            barkAudio.play().catch(() => {});
+        }
+        
+        // Progress simulation
         function updateProgress() {
             if (!isPlaying) return;
-            
             progress = (progress + 1) % songDuration;
             const percentage = (progress / songDuration) * 100;
             progressBar.style.width = percentage + "%";
             
-            const currentMin = Math.floor(progress / 60);
-            const currentSec = Math.floor(progress % 60);
-            currentTimeEl.textContent = `${currentMin}:${currentSec < 10 ? '0' : ''}${currentSec}`;
+            const min = Math.floor(progress / 60);
+            const sec = Math.floor(progress % 60);
+            currentTimeEl.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
         }
         
-        // Auto start
+        // Bark Fart every 30 seconds
+        setInterval(() => {
+            playBarkFart();
+        }, 30000);
+        
+        // Initial load
         window.addEventListener('load', () => {
             setInterval(updateProgress, 1000);
             
-            // Force autoplay
+            // Start main song
             setTimeout(() => {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
-            }, 500);
-        });
-        
-        // Click to seek on progress bar
-        document.getElementById('progressContainer').addEventListener('click', (e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            progress = Math.floor(pos * songDuration);
+                mainPlayer.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
+            }, 600);
+            
+            // First bark fart after 5 seconds
+            setTimeout(playBarkFart, 5000);
         });
     </script>
 </body>
