@@ -239,6 +239,49 @@
             height: 270px;
             pointer-events: none;
         }
+
+        /* ── Evil Sam Screen ── */
+        #evilSamScreen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background-image: url('evil-sam.jpg');
+            background-size: cover;
+            background-position: center top;
+        }
+        #evilSamScreen .evil-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(80, 0, 0, 0.35);
+        }
+        #evilSamScreen .evil-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 28px 20px 24px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow:
+                0 0 20px rgba(255,0,0,0.9),
+                0 0 50px rgba(255,0,0,0.6),
+                3px 3px 0 #000,
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000;
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%);
+            animation: evilPulse 1.6s ease-in-out infinite alternate;
+        }
+        @keyframes evilPulse {
+            0%   { text-shadow: 0 0 20px rgba(255,0,0,0.9), 0 0 50px rgba(255,0,0,0.6), 3px 3px 0 #000, -2px -2px 0 #000; }
+            100% { text-shadow: 0 0 40px rgba(255,50,0,1),  0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }
+        }
     </style>
 </head>
 <body>
@@ -254,6 +297,12 @@
             <div class="splash-enter">✦ click anywhere to enter ✦</div>
         </div>
     </div>
+    <!-- Evil Sam alternate background (1/5 chance) -->
+    <div id="evilSamScreen">
+        <div class="evil-overlay"></div>
+        <div class="evil-text">Evil Sam has the payload</div>
+    </div>
+
     <div class="background"></div>
     <div class="overlay"></div>
     
@@ -426,13 +475,25 @@
             const splash = document.getElementById('entrySplash');
             const content = document.getElementById('mainContent');
             splash.classList.add('hidden');
-            content.classList.add('visible');
+
+            // 1/5 chance for Evil Sam screen
+            const isEvil = Math.random() < 0.2;
+            if (isEvil) {
+                document.getElementById('evilSamScreen').style.display = 'block';
+                // Don't show normal content or the music player
+                // content stays invisible — music still plays
+            } else {
+                content.classList.add('visible');
+            }
+
             if (player && player.unMute) {
                 player.unMute();
                 player.setVolume(100);
                 isMuted = false;
                 isBoosted = true;
-                volBtn.textContent = '🔇 Normal';
+                if (!isEvil) {
+                    volBtn.textContent = '🔇 Normal';
+                }
             }
         }
 
