@@ -5,51 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>aoud.lol</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Press+Start+2P&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             height: 100vh;
             overflow: hidden;
             position: relative;
-            font-family: 'Press Start 2P', system-ui;
-            color: #fff;
+            font-family: 'VT323', monospace;
+            color: #ff00ff;
+            background: #000;
         }
         
-        /* Background Image */
         .background {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://grok.x.ai/attachments/image.png'); /* Replace with your hosted image URL */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('https://grok.x.ai/attachments/image.png'); /* YOUR IMAGE HERE */
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-            filter: brightness(0.7) contrast(1.1);
-            z-index: -2;
+            filter: brightness(0.65) contrast(1.3) saturate(1.4);
+            z-index: -3;
         }
         
-        /* Dark overlay */
-        .overlay {
+        .vignette {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.9) 80%);
+            z-index: -2;
+            animation: pulse 4s infinite alternate;
+        }
+        
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                rgba(0, 255, 255, 0.03) 1px,
+                transparent 3px
+            );
             z-index: -1;
+            pointer-events: none;
+            animation: scan 6s linear infinite;
         }
         
         .content {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -61,131 +67,150 @@
         
         h1 {
             font-family: 'Creepster', cursive;
-            font-size: 5rem;
-            text-shadow: 0 0 20px #ff00ff, 
-                         0 0 40px #00ffff;
-            margin-bottom: 1rem;
-            letter-spacing: 4px;
-            animation: glitch 1s infinite alternate;
+            font-size: 7rem;
+            letter-spacing: 8px;
+            text-shadow: 
+                0 0 10px #ff00ff,
+                0 0 20px #ff00ff,
+                0 0 40px #00ffff,
+                0 0 80px #ff00ff;
+            animation: glitch 0.4s infinite alternate;
+            margin-bottom: 10px;
         }
         
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            text-shadow: 0 0 10px #000;
+        .subtitle {
+            font-size: 2rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 40px;
+            animation: flicker 1.5s infinite alternate;
         }
         
-        .controls {
-            display: flex;
-            gap: 20px;
-            margin-top: 2rem;
+        .neon-text {
+            font-size: 1.4rem;
+            margin: 20px 0;
+            text-shadow: 0 0 15px #ff00ff;
         }
         
         button {
-            padding: 15px 30px;
-            font-family: 'Press Start 2P', system-ui;
-            font-size: 1rem;
+            padding: 18px 50px;
+            font-size: 1.3rem;
             background: transparent;
             color: #fff;
-            border: 3px solid #ff00ff;
+            border: 4px solid #ff00ff;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-transform: uppercase;
+            box-shadow: 0 0 30px #ff00ff;
+            margin: 20px;
         }
         
         button:hover {
             background: #ff00ff;
             color: #000;
-            box-shadow: 0 0 30px #ff00ff;
+            transform: scale(1.1);
+            box-shadow: 0 0 60px #ff00ff;
         }
         
         @keyframes glitch {
             0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(3px, -3px); }
+            20% { transform: translate(-4px, 4px); }
+            40% { transform: translate(4px, -4px); }
             60% { transform: translate(-2px, 2px); }
-            80% { transform: translate(2px, -2px); }
             100% { transform: translate(0); }
         }
         
-        /* Audio visualizer style */
-        .visualizer {
-            width: 300px;
-            height: 60px;
-            background: rgba(255,0,255,0.2);
-            border: 2px solid #00ffff;
-            margin: 2rem 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            text-shadow: 0 0 10px #ff00ff;
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        @keyframes pulse {
+            from { opacity: 0.7; }
+            to { opacity: 0.95; }
+        }
+        
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 300px; }
+        }
+        
+        .warning {
+            position: absolute;
+            bottom: 30px;
+            font-size: 1rem;
+            color: #ff0088;
+            animation: flicker 0.8s infinite;
         }
     </style>
 </head>
 <body>
     <div class="background"></div>
-    <div class="overlay"></div>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
     
     <div class="content">
-        <h1>aoud.lol</h1>
-        <p>why didn't you stop me?</p>
+        <h1>AOUD.LOL</h1>
+        <div class="subtitle">WHY DIDN'T YOU STOP ME?</div>
+        <p class="neon-text">pupsies • MAXIMUM SEDUCTION MODE</p>
         
-        <div class="visualizer">
-            🔊 LOUD AS FUCK MODE ACTIVATED 🔊
+        <div style="margin: 40px 0;">
+            <button onclick="boostVolume()">CRANK IT LOUDER</button>
+            <button onclick="togglePlay()">STOP / DESTROY</button>
         </div>
         
-        <div class="controls">
-            <button onclick="toggleMusic()">PLAY / PAUSE</button>
-            <button onclick="window.location.reload()">RELOAD CHAOS</button>
-        </div>
-        
-        <p style="margin-top: 3rem; font-size: 0.9rem; opacity: 0.7;">
-            cranked to max volume • loop enabled
+        <p style="margin-top: 60px; opacity: 0.8; font-size: 1.1rem;">
+            TURN YOUR VOLUME TO 100% • HEADPHONES RECOMMENDED
         </p>
     </div>
 
-    <!-- Hidden YouTube embed for the song -->
-    <iframe id="youtube-player" 
-            width="0" 
-            height="0" 
-            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100" 
+    <!-- SEXY LOUD AUDIO -->
+    <iframe id="music" 
+            width="0" height="0" 
+            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&rel=0&modestbranding=1" 
             frameborder="0" 
             allow="autoplay; encrypted-media" 
             allowfullscreen>
     </iframe>
 
     <script>
-        // The song: why didn't you stop me? by pupsies
-        const youtubeEmbed = document.getElementById('youtube-player');
+        const player = document.getElementById('music');
         
-        function toggleMusic() {
-            if (youtubeEmbed.src.includes('autoplay=1')) {
-                youtubeEmbed.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
+        function boostVolume() {
+            // Visual + attempt to boost
+            document.body.style.filter = "saturate(2) brightness(1.3)";
+            setTimeout(() => document.body.style.filter = "", 800);
+            
+            alert("🔊 CRANKED TO THE MAX. IF IT'S NOT LOUD ENOUGH, TURN YOUR DEVICE UP.");
+        }
+        
+        function togglePlay() {
+            if (player.src.includes('autoplay=1')) {
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
             } else {
-                youtubeEmbed.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100";
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&rel=0&modestbranding=1";
             }
         }
         
-        // Force loud autoplay on load
-        window.onload = function() {
-            console.log("%c🔊 WHY DIDN'T YOU STOP ME? by pupsies - MAX VOLUME", 
-                "color: #ff00ff; font-size: 20px; font-family: monospace;");
+        // Aggressive autoplay on load
+        window.addEventListener('load', () => {
+            console.log("%c🔥 AOUD.LOL - WHY DIDN'T YOU STOP ME? 🔥\nMAX VOLUME • SEXY MODE ACTIVATED", 
+                "color:#ff00ff; font-size:22px; font-family:monospace;");
             
-            // Try to unmute and play loud
+            // Force play
             setTimeout(() => {
-                try {
-                    youtubeEmbed.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-                } catch(e) {}
-            }, 1500);
-        };
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100&rel=0";
+            }, 800);
+        });
         
-        // Keyboard controls
-        document.addEventListener('keydown', function(e) {
-            if (e.key === ' ') {
+        // Spacebar control
+        document.addEventListener('keydown', e => {
+            if (e.key === " ") {
                 e.preventDefault();
-                toggleMusic();
+                togglePlay();
+            }
+            if (e.key.toLowerCase() === "l") {
+                boostVolume();
             }
         });
     </script>
