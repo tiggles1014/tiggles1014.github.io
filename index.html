@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>aoud.lol</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -14,43 +14,28 @@
             overflow: hidden;
             position: relative;
             font-family: 'VT323', monospace;
-            color: #ff00ff;
-            background: #000;
+            color: #ff99cc;
+            background: #0a0a0a;
         }
         
+        /* Background */
         .background {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('https://grok.x.ai/attachments/image.png'); /* YOUR IMAGE HERE */
+            background-image: url('https://grok.x.ai/attachments/Screenshot%202026-06-30%20211543.png');
             background-size: cover;
             background-position: center;
-            filter: brightness(0.65) contrast(1.3) saturate(1.4);
+            filter: brightness(0.75) contrast(1.1) saturate(0.9);
             z-index: -3;
         }
         
-        .vignette {
+        .overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.9) 80%);
+            background: rgba(10, 0, 20, 0.75);
             z-index: -2;
-            animation: pulse 4s infinite alternate;
-        }
-        
-        .scanlines {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                transparent 0px,
-                rgba(0, 255, 255, 0.03) 1px,
-                transparent 3px
-            );
-            z-index: -1;
-            pointer-events: none;
-            animation: scan 6s linear infinite;
         }
         
         .content {
@@ -62,112 +47,134 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
         }
         
         h1 {
-            font-family: 'Creepster', cursive;
-            font-size: 7rem;
-            letter-spacing: 8px;
-            text-shadow: 
-                0 0 10px #ff00ff,
-                0 0 20px #ff00ff,
-                0 0 40px #00ffff,
-                0 0 80px #ff00ff;
-            animation: glitch 0.4s infinite alternate;
+            font-size: 5.5rem;
+            letter-spacing: 6px;
+            color: #ff99cc;
+            text-shadow: 3px 3px 0 #000,
+                        -2px -2px 0 #000;
             margin-bottom: 10px;
         }
         
         .subtitle {
-            font-size: 2rem;
-            color: #00ffff;
-            text-shadow: 0 0 20px #00ffff;
-            margin-bottom: 40px;
-            animation: flicker 1.5s infinite alternate;
+            font-size: 1.8rem;
+            color: #cc88ff;
+            margin-bottom: 50px;
         }
         
-        .neon-text {
-            font-size: 1.4rem;
+        /* Mini Player */
+        .player {
+            width: 420px;
+            background: rgba(20, 0, 30, 0.95);
+            border: 4px solid #ff66aa;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 102, 170, 0.4);
+            margin-bottom: 40px;
+        }
+        
+        .now-playing {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ffccdd;
+        }
+        
+        .progress-container {
+            height: 8px;
+            background: #330022;
             margin: 20px 0;
-            text-shadow: 0 0 15px #ff00ff;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ff66aa, #cc44ff);
+            transition: width 0.3s;
+        }
+        
+        .time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            color: #bb77aa;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
         }
         
         button {
-            padding: 18px 50px;
-            font-size: 1.3rem;
             background: transparent;
-            color: #fff;
-            border: 4px solid #ff00ff;
+            border: 3px solid #ff66aa;
+            color: #ffccdd;
+            padding: 12px 24px;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.2s;
-            text-transform: uppercase;
-            box-shadow: 0 0 30px #ff00ff;
-            margin: 20px;
         }
         
         button:hover {
-            background: #ff00ff;
+            background: #ff66aa;
             color: #000;
-            transform: scale(1.1);
-            box-shadow: 0 0 60px #ff00ff;
         }
         
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-4px, 4px); }
-            40% { transform: translate(4px, -4px); }
-            60% { transform: translate(-2px, 2px); }
-            100% { transform: translate(0); }
-        }
-        
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
-        @keyframes pulse {
-            from { opacity: 0.7; }
-            to { opacity: 0.95; }
-        }
-        
-        @keyframes scan {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 300px; }
-        }
-        
-        .warning {
+        .footer {
             position: absolute;
             bottom: 30px;
-            font-size: 1rem;
-            color: #ff0088;
-            animation: flicker 0.8s infinite;
+            font-size: 1.1rem;
+            color: #996688;
         }
     </style>
 </head>
 <body>
     <div class="background"></div>
-    <div class="vignette"></div>
-    <div class="scanlines"></div>
+    <div class="overlay"></div>
     
     <div class="content">
         <h1>AOUD.LOL</h1>
-        <div class="subtitle">WHY DIDN'T YOU STOP ME?</div>
-        <p class="neon-text">pupsies • MAXIMUM SEDUCTION MODE</p>
+        <div class="subtitle">pupsies</div>
         
-        <div style="margin: 40px 0;">
-            <button onclick="boostVolume()">CRANK IT LOUDER</button>
-            <button onclick="togglePlay()">STOP / DESTROY</button>
+        <!-- Mini Player -->
+        <div class="player">
+            <div class="now-playing">NOW PLAYING</div>
+            <div style="font-size: 1.5rem; margin-bottom: 10px; color: #ff99cc;">
+                why didn't you stop me?
+            </div>
+            <div style="font-size: 1rem; color: #cc77aa; margin-bottom: 20px;">
+                pupsies • i took too many ibuprofen
+            </div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="time">
+                <span id="currentTime">0:00</span>
+                <span id="duration">1:44</span>
+            </div>
+            
+            <div class="controls">
+                <button onclick="togglePlay()">⏸️ / ▶️</button>
+                <button onclick="boostVolume()">🔊 LOUDER</button>
+            </div>
         </div>
         
-        <p style="margin-top: 60px; opacity: 0.8; font-size: 1.1rem;">
-            TURN YOUR VOLUME TO 100% • HEADPHONES RECOMMENDED
-        </p>
+        <div class="footer">
+            turn your volume up • headphones on
+        </div>
     </div>
 
-    <!-- SEXY LOUD AUDIO -->
+    <!-- YouTube Player -->
     <iframe id="music" 
             width="0" height="0" 
-            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&rel=0&modestbranding=1" 
+            src="https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY" 
             frameborder="0" 
             allow="autoplay; encrypted-media" 
             allowfullscreen>
@@ -175,43 +182,57 @@
 
     <script>
         const player = document.getElementById('music');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
         
-        function boostVolume() {
-            // Visual + attempt to boost
-            document.body.style.filter = "saturate(2) brightness(1.3)";
-            setTimeout(() => document.body.style.filter = "", 800);
-            
-            alert("🔊 CRANKED TO THE MAX. IF IT'S NOT LOUD ENOUGH, TURN YOUR DEVICE UP.");
-        }
+        let isPlaying = true;
+        let progress = 0;
+        const songDuration = 104; // 1:44 in seconds
         
         function togglePlay() {
-            if (player.src.includes('autoplay=1')) {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
             } else {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&rel=0&modestbranding=1";
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=0";
             }
         }
         
-        // Aggressive autoplay on load
-        window.addEventListener('load', () => {
-            console.log("%c🔥 AOUD.LOL - WHY DIDN'T YOU STOP ME? 🔥\nMAX VOLUME • SEXY MODE ACTIVATED", 
-                "color:#ff00ff; font-size:22px; font-family:monospace;");
+        function boostVolume() {
+            document.body.style.filter = "saturate(1.6) contrast(1.2)";
+            setTimeout(() => document.body.style.filter = "", 600);
+            alert("🔊 MAX VOLUME ACTIVATED");
+        }
+        
+        // Fake progress bar (real sync is complex without YouTube API)
+        function updateProgress() {
+            if (!isPlaying) return;
             
-            // Force play
+            progress = (progress + 1) % songDuration;
+            const percentage = (progress / songDuration) * 100;
+            progressBar.style.width = percentage + "%";
+            
+            const currentMin = Math.floor(progress / 60);
+            const currentSec = Math.floor(progress % 60);
+            currentTimeEl.textContent = `${currentMin}:${currentSec < 10 ? '0' : ''}${currentSec}`;
+        }
+        
+        // Auto start
+        window.addEventListener('load', () => {
+            setInterval(updateProgress, 1000);
+            
+            // Force autoplay
             setTimeout(() => {
-                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY&volume=100&rel=0";
-            }, 800);
+                player.src = "https://www.youtube.com/embed/xpmf4u5rkNY?autoplay=1&loop=1&playlist=xpmf4u5rkNY";
+            }, 500);
         });
         
-        // Spacebar control
-        document.addEventListener('keydown', e => {
-            if (e.key === " ") {
-                e.preventDefault();
-                togglePlay();
-            }
-            if (e.key.toLowerCase() === "l") {
-                boostVolume();
-            }
+        // Click to seek on progress bar
+        document.getElementById('progressContainer').addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            progress = Math.floor(pos * songDuration);
         });
     </script>
 </body>
