@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I love you aoud</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +13,6 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
-            font-family: 'VT323', monospace;
             font-family: 'Inter', sans-serif;
             color: #ff99cc;
             background: #0a0a0a;
@@ -24,7 +22,6 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('https://raw.githubusercontent.com/tiggles/tiggles1014.github.io/main/Screenshot%202026-06-30%20211543.png');
             background-image: url('bg.png');
             background-size: cover;
             background-position: center;
@@ -38,6 +35,44 @@
             width: 100%; height: 100%;
             background: rgba(15, 0, 25, 0.78);
             z-index: -2;
+        }
+        /* ── Click-to-start splash ── */
+        #startScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(5, 0, 12, 0.88);
+            cursor: pointer;
+            transition: opacity 0.6s ease;
+        }
+        #startScreen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #startScreen .play-btn {
+            width: 90px;
+            height: 90px;
+            border: 3px solid #ff66aa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            color: #ff99cc;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        #startScreen:hover .play-btn {
+            background: rgba(255, 102, 170, 0.2);
+        }
+        #startScreen p {
+            font-size: 1.1rem;
+            color: #cc88aa;
+            letter-spacing: 2px;
         }
         
         .content {
@@ -57,12 +92,14 @@
             color: #ff99cc;
             text-shadow: 3px 3px 0 #000, -2px -2px 0 #000;
             margin-bottom: 8px;
+            font-weight: 300;
         }
         
         .subtitle {
             font-size: 2.1rem;
             color: #ff77bb;
             margin-bottom: 50px;
+            font-weight: 300;
         }
         
         .player {
@@ -76,9 +113,11 @@
         }
         
         .now-playing {
-            font-size: 1.4rem;
+            font-size: 1rem;
+            letter-spacing: 3px;
             margin-bottom: 12px;
             color: #ffbbdd;
+            text-transform: uppercase;
         }
         
         .progress-container {
@@ -87,6 +126,7 @@
             margin: 20px 0;
             position: relative;
             cursor: pointer;
+            border-radius: 4px;
         }
         
         .progress-bar {
@@ -94,12 +134,13 @@
             width: 0%;
             background: linear-gradient(to right, #ff66aa, #cc44ff);
             transition: width 0.9s linear;
+            border-radius: 4px;
         }
         
         .time {
             display: flex;
             justify-content: space-between;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             color: #bb77aa;
         }
         
@@ -112,14 +153,15 @@
         
         button {
             background: transparent;
-            border: 3px solid #ff66aa;
+            border: 2px solid #ff66aa;
             color: #ffccdd;
-            padding: 12px 26px;
-            font-size: 1.2rem;
+            padding: 10px 24px;
+            font-size: 0.95rem;
             cursor: pointer;
-            font-family: 'VT323', monospace;
             font-family: 'Inter', sans-serif;
+            letter-spacing: 1px;
             transition: background 0.15s, color 0.15s;
+            border-radius: 4px;
         }
         
         button:hover {
@@ -133,38 +175,38 @@
             0%   { filter: saturate(3) brightness(1.4); }
             100% { filter: saturate(1) brightness(1); }
         }
-        
-        .footer {
-            position: absolute;
-            bottom: 35px;
-            font-size: 1.2rem;
-            color: #996688;
-        }
-        /* YouTube iframe hidden offscreen */
+        /* YouTube player: real size but visually hidden */
         #ytplayer {
-            position: absolute;
-            left: -9999px;
-            top: -9999px;
-            width: 1px;
-            height: 1px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 2px;
+            height: 2px;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <div class="background"></div>
     <div class="overlay"></div>
+    <!-- Click-to-start overlay (satisfies browser autoplay policy) -->
+    <div id="startScreen" onclick="startEverything()">
+        <div class="play-btn">▶</div>
+        <p>click to play</p>
+    </div>
     
     <div class="content">
         <h1>I LOVE YOU AOUD</h1>
         <div class="subtitle">pupsies</div>
         
         <div class="player">
-            <div class="now-playing">NOW BARKING</div>
-            <div style="font-size: 1.55rem; margin-bottom: 10px; color: #ff99cc;">
+            <div class="now-playing">Now Playing</div>
+            <div style="font-size: 1.4rem; margin-bottom: 6px; color: #ff99cc; font-weight: 400;">
                 why didn't you stop me?
             </div>
-            <div style="font-size: 1.05rem; color: #cc77aa;">
-                pupsies • 1:44
+            <div style="font-size: 0.95rem; color: #cc77aa; margin-bottom: 4px;">
+                pupsies &nbsp;·&nbsp; 1:44
             </div>
             
             <div class="progress-container" id="progressContainer">
@@ -177,77 +219,70 @@
             </div>
             
             <div class="controls">
-                <button id="playPauseBtn" onclick="togglePlay()">⏸ PAUSE</button>
-                <button onclick="boostVolume()">🔊 ULTRA LOUD</button>
+                <button id="playPauseBtn" onclick="togglePlay()">⏸ Pause</button>
+                <button id="volBtn" onclick="boostVolume()">🔊 Ultra Loud</button>
             </div>
         </div>
-        
-        <div class="footer">
-            every 30 seconds a special surprise 💨🐶
-        </div>
     </div>
-    <!-- YouTube IFrame API -->
+    <!-- YouTube IFrame API target -->
     <div id="ytplayer"></div>
-    <!-- Bark Fart Sound -->
-    <audio id="barkFart" preload="auto">
-        <source src="https://raw.githubusercontent.com/tiggles/tiggles1014.github.io/main/bark-fart-made-with-Voicemod.mp3" type="audio/mpeg">
-    </audio>
-    <!-- Load YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const barkAudio    = document.getElementById('barkFart');
-        const progressBar  = document.getElementById('progressBar');
+        const progressBar   = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const songDuration = 104; // 1:44 in seconds
-        let isPlaying  = false;   // starts false; set true once API is ready
-        let progress   = 0;
-        let ytPlayer   = null;
-        let isBoosted  = false;
-        // ── YouTube IFrame API ──────────────────────────────────────────────
+        const playPauseBtn  = document.getElementById('playPauseBtn');
+        const volBtn        = document.getElementById('volBtn');
+        const startScreen   = document.getElementById('startScreen');
+        const songDuration = 104; // seconds
+        let isPlaying = false;
+        let ytPlayer  = null;
+        let isBoosted = false;
+        let started   = false;
+        // ── YouTube IFrame API ──────────────────────────────────────────
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('ytplayer', {
                 videoId: 'xpmf4u5rkNY',
                 playerVars: {
-                    autoplay: 1,
-                    loop:     1,
-                    playlist: 'xpmf4u5rkNY',
-                    controls: 0,
+                    autoplay:       0,   // we'll call playVideo() after user click
+                    loop:           1,
+                    playlist:       'xpmf4u5rkNY',
+                    controls:       0,
                     modestbranding: 1,
+                    rel:            0,
                 },
                 events: {
-                    onReady: onPlayerReady,
+                    onReady:       onPlayerReady,
                     onStateChange: onPlayerStateChange,
                 }
             });
         }
-        function onPlayerReady(event) {
-            event.target.setVolume(80);
-            event.target.playVideo();
-            isPlaying = true;
-            updatePlayPauseBtn();
-            // Start simulated progress bar
-            setInterval(tickProgress, 1000);
-            // First bark after 4.5 s
-            setTimeout(playBarkFart, 4500);
-            // Bark every 30 s
-            setInterval(playBarkFart, 30000);
+        function onPlayerReady() {
+            ytPlayer.setVolume(80);
+            // If the user already clicked before the API was ready, start now
+            if (started) ytPlayer.playVideo();
         }
         function onPlayerStateChange(event) {
-            // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0
             if (event.data === YT.PlayerState.PLAYING) {
                 isPlaying = true;
             } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
                 isPlaying = false;
                 if (event.data === YT.PlayerState.ENDED) {
-                    // Loop: restart
                     ytPlayer.seekTo(0);
                     ytPlayer.playVideo();
                 }
             }
             updatePlayPauseBtn();
         }
-        // ── Controls ────────────────────────────────────────────────────────
+        // ── Start on first click ────────────────────────────────────────
+        function startEverything() {
+            started = true;
+            startScreen.classList.add('hidden');
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                ytPlayer.playVideo();
+            }
+            setInterval(tickProgress, 1000);
+        }
+        // ── Controls ────────────────────────────────────────────────────
         function togglePlay() {
             if (!ytPlayer) return;
             if (isPlaying) {
@@ -257,65 +292,41 @@
             }
         }
         function updatePlayPauseBtn() {
-            playPauseBtn.textContent = isPlaying ? '⏸ PAUSE' : '▶ PLAY';
+            playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
         }
         function boostVolume() {
             if (!ytPlayer) return;
             if (isBoosted) {
                 ytPlayer.setVolume(80);
                 isBoosted = false;
-                boostVolume.btn = '🔊 ULTRA LOUD';
-                document.querySelector('button:last-child').textContent = '🔊 ULTRA LOUD';
+                volBtn.textContent = '🔊 Ultra Loud';
             } else {
                 ytPlayer.setVolume(100);
                 isBoosted = true;
-                document.querySelector('button:last-child').textContent = '🔇 NORMAL';
-                // Flash effect
+                volBtn.textContent = '🔇 Normal';
                 document.body.classList.add('flash');
                 document.body.addEventListener('animationend', () => {
                     document.body.classList.remove('flash');
                 }, { once: true });
             }
         }
-        // ── Bark Fart ───────────────────────────────────────────────────────
-        function playBarkFart() {
-            barkAudio.currentTime = 0;
-            barkAudio.volume = 0.95;
-            barkAudio.play().catch(() => {});
-        }
-        // ── Progress Bar (simulated, syncs on loop) ─────────────────────────
+        // ── Progress Bar ────────────────────────────────────────────────
         function tickProgress() {
-            if (!isPlaying) return;
-            // Try to sync with actual YouTube time if available
-            if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
-                try {
-                    const actual = ytPlayer.getCurrentTime();
-                    if (actual > 0) {
-                        progress = actual % songDuration;
-                    } else {
-                        progress = (progress + 1) % songDuration;
-                    }
-                } catch(e) {
-                    progress = (progress + 1) % songDuration;
-                }
-            } else {
-                progress = (progress + 1) % songDuration;
-            }
-            const percentage = (progress / songDuration) * 100;
-            progressBar.style.width = percentage + '%';
+            if (!isPlaying || !ytPlayer) return;
+            let t = 0;
+            try { t = ytPlayer.getCurrentTime() || 0; } catch(e) {}
+            const progress = t % songDuration;
+            progressBar.style.width = (progress / songDuration * 100) + '%';
             const min = Math.floor(progress / 60);
             const sec = Math.floor(progress % 60);
             currentTimeEl.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
         }
-        // ── Click progress bar to seek ───────────────────────────────────────
+        // ── Click to seek ───────────────────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const ratio = (e.clientX - rect.left) / rect.width;
+            if (!ytPlayer) return;
+            const ratio  = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
             const seekTo = ratio * songDuration;
-            progress = seekTo;
-            if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
-                ytPlayer.seekTo(seekTo, true);
-            }
+            ytPlayer.seekTo(seekTo, true);
         });
     </script>
 </body>
