@@ -247,8 +247,8 @@
             inset: 0;
             z-index: 500;
             background-image: url('evil-sam.jpg');
-            background-size: cover;
-            background-position: center top;
+            background-size: 100% 100%;
+            background-position: top center;
         }
         #evilSamScreen .evil-overlay {
             position: absolute;
@@ -550,6 +550,22 @@
                 }
             }
         }, 500);
+
+        // ── Secret F10 key: force Evil Sam screen ───────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F10') {
+                e.preventDefault();
+                const splash = document.getElementById('entrySplash');
+                splash.classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('visible');
+                document.getElementById('evilSamScreen').style.display = 'block';
+                if (player && player.unMute) {
+                    player.unMute();
+                    player.setVolume(100);
+                    isMuted = false;
+                }
+            }
+        });
 
         // ── Click progress bar to seek ──────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
