@@ -36,38 +36,98 @@
             background: rgba(15, 0, 25, 0.78);
             z-index: -2;
         }
-        /* ── Unmute banner ── */
-        #unmuteBanner {
+        /* ── Entry Splash Screen ── */
+        #entrySplash {
             position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 500;
+            inset: 0;
+            z-index: 1000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 14px;
-            background: rgba(255, 80, 150, 0.18);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255, 102, 170, 0.35);
+            background: #0a0005;
             cursor: pointer;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
-        #unmuteBanner.hidden { opacity: 0; pointer-events: none; }
-        #unmuteBanner span {
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: #ffccdd;
+        #entrySplash.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
-        #unmuteBanner .pulse {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #ff66aa;
-            animation: pulse 1.2s infinite;
+        #entrySplash .splash-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.35) saturate(1.2);
+        }
+        #entrySplash .splash-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(80,0,40,0.55) 0%, rgba(5,0,15,0.92) 100%);
+        }
+        #entrySplash .splash-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            text-align: center;
+            padding: 40px;
+        }
+        #entrySplash .splash-logo {
+            font-size: 5.5rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            color: #ff99cc;
+            text-shadow: 0 0 60px rgba(255,102,170,0.8), 0 0 120px rgba(255,102,170,0.4), 3px 3px 0 #000;
+            animation: splashGlow 2.5s ease-in-out infinite alternate;
+        }
+        #entrySplash .splash-sub {
+            font-size: 1.1rem;
+            letter-spacing: 5px;
+            color: #cc77aa;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+        #entrySplash .splash-divider {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ff66aa, transparent);
+        }
+        #entrySplash .splash-enter {
+            font-size: 0.85rem;
+            letter-spacing: 6px;
+            color: #ffbbdd;
+            text-transform: uppercase;
+            animation: splashBlink 1.8s ease-in-out infinite;
+        }
+        #entrySplash .splash-hearts {
+            font-size: 1.4rem;
+            opacity: 0.7;
+            animation: splashFloat 3s ease-in-out infinite alternate;
+        }
+        @keyframes splashGlow {
+            0%   { text-shadow: 0 0 40px rgba(255,102,170,0.6), 0 0 80px rgba(255,102,170,0.3), 3px 3px 0 #000; }
+            100% { text-shadow: 0 0 80px rgba(255,102,170,1), 0 0 160px rgba(255,102,170,0.6), 3px 3px 0 #000; }
+        }
+        @keyframes splashBlink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+        @keyframes splashFloat {
+            0%   { transform: translateY(0px); }
+            100% { transform: translateY(-8px); }
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50%       { opacity: 0.4; transform: scale(0.7); }
         }
+        /* Hide main content until splash is dismissed */
+        .content { opacity: 0; transition: opacity 0.8s ease 0.3s; }
+        .content.visible { opacity: 1; }
         
         .content {
             position: relative;
@@ -185,16 +245,22 @@
     </style>
 </head>
 <body>
-    <!-- Muted autoplay starts immediately; user clicks this to unmute -->
-    <div id="unmuteBanner" onclick="unmute()">
-        <div class="pulse"></div>
-        <span>🎵 CLICK ANYWHERE TO UNMUTE</span>
-        <div class="pulse"></div>
+    <!-- Full-screen entry splash -->
+    <div id="entrySplash" onclick="enterSite()">
+        <div class="splash-bg"></div>
+        <div class="splash-overlay"></div>
+        <div class="splash-content">
+            <div class="splash-hearts">🌸 ♡ 🌸</div>
+            <div class="splash-logo">aoud.lol</div>
+            <div class="splash-sub">pupsies</div>
+            <div class="splash-divider"></div>
+            <div class="splash-enter">✦ click anywhere to enter ✦</div>
+        </div>
     </div>
     <div class="background"></div>
     <div class="overlay"></div>
     
-    <div class="content">
+    <div class="content" id="mainContent">
         <h1>aoud.lol</h1>
         <div class="subtitle">pupsies</div>
         
@@ -353,26 +419,25 @@
                     player.mute();
                 } else {
                     player.unMute();
-                    player.setVolume(isBoosted ? 100 : 80);
+                    player.setVolume(100);
                 }
             }
         }
 
-        // ── Unmute on first click ───────────────────────────────────────
-        function unmute() {
+        // ── Enter site & unmute on splash click ────────────────────────
+        function enterSite() {
+            const splash = document.getElementById('entrySplash');
+            const content = document.getElementById('mainContent');
+            splash.classList.add('hidden');
+            content.classList.add('visible');
             if (player && player.unMute) {
                 player.unMute();
-                player.setVolume(isBoosted ? 100 : 80);
+                player.setVolume(100);
                 isMuted = false;
-                unmuteBanner.classList.add('hidden');
+                isBoosted = true;
+                volBtn.textContent = '🔇 Normal';
             }
         }
-        
-        document.body.addEventListener('click', function onFirstClick(e) {
-            if (isMuted) {
-                unmute();
-            }
-        }, { once: false });
 
         // ── Play / Pause ────────────────────────────────────────────────
         function togglePlay() {
@@ -392,7 +457,7 @@
         function toggleBoost() {
             if (!player || !player.setVolume) return;
             if (isBoosted) {
-                player.setVolume(80);
+                player.setVolume(50);
                 isBoosted = false;
                 volBtn.textContent = '🔊 Ultra Loud';
             } else {
