@@ -283,6 +283,8 @@
             100% { text-shadow: 0 0 40px rgba(255,50,0,1),  0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }
         }
     </style>
+    <!-- Google Identity Services client library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <!-- Full-screen entry splash -->
@@ -402,13 +404,14 @@
                     'autoplay': 1,
                     'mute': 1,
                     'controls': 0,
-                    'disablejsapi': 1,
+                    'enablejsapi': 1,
                     'rel': 0,
                     'modestbranding': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
                 }
             });
         }
@@ -422,6 +425,11 @@
             if (event.data === YT.PlayerState.ENDED) {
                 playRandomTrack();
             }
+        }
+
+        function onPlayerError(event) {
+            console.warn("YouTube Player error encountered, skipping to next track. Error code:", event.data);
+            playRandomTrack();
         }
 
         // ── Track Selection ─────────────────────────────────────────────
@@ -476,8 +484,9 @@
             const content = document.getElementById('mainContent');
             splash.classList.add('hidden');
 
-            // 1/5 chance for Evil Sam screen
-            const isEvil = Math.random() < 0.2;
+            // 1/5 chance for Evil Sam screen (only if not disabled by tiggles)
+            const samDisabled = localStorage.getItem('sam_screens_disabled') === 'true';
+            const isEvil = !samDisabled && Math.random() < 0.2;
             if (isEvil) {
                 document.getElementById('evilSamScreen').style.display = 'block';
                 // Don't show normal content or the music player
@@ -486,14 +495,16 @@
                 content.classList.add('visible');
             }
 
+            // Always update state variables immediately upon entering site to avoid race condition
+            isMuted = false;
+            isBoosted = true;
+            if (!isEvil) {
+                volBtn.textContent = '🔇 Normal';
+            }
+
             if (player && player.unMute) {
                 player.unMute();
                 player.setVolume(100);
-                isMuted = false;
-                isBoosted = true;
-                if (!isEvil) {
-                    volBtn.textContent = '🔇 Normal';
-                }
             }
         }
 
@@ -551,10 +562,14 @@
             }
         }, 500);
 
-        // ── Secret F10 key: force Evil Sam screen ───────────────────────
+        // ── Secret keys: F10 to force Evil Sam, Insert to toggle/disable Sam screens ──
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F10') {
                 e.preventDefault();
+                if (localStorage.getItem('sam_screens_disabled') === 'true') {
+                    alert("Sam-related screens are disabled for this account.");
+                    return;
+                }
                 const splash = document.getElementById('entrySplash');
                 splash.classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('visible');
@@ -564,8 +579,91 @@
                     player.setVolume(100);
                     isMuted = false;
                 }
+            } else if (e.key === 'Insert') {
+                e.preventDefault();
+                if (localStorage.getItem('sam_screens_disabled') === 'true') {
+                    const confirmEnable = confirm("Sam-related screens are currently DISABLED. Do you want to RE-ENABLE them?");
+                    if (confirmEnable) {
+                        localStorage.removeItem('sam_screens_disabled');
+                        alert("Sam-related screens have been re-enabled.");
+                    }
+                } else {
+                    initGoogleSignIn();
+                }
             }
         });
+
+        // ── Google Identity Services authentication for 'tiggles' ────────
+        function initGoogleSignIn() {
+            if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+                alert("Google Identity library is still loading or blocked. Please wait a moment and try again.");
+                return;
+            }
+
+            let clientID = localStorage.getItem('google_client_id');
+            if (!clientID || clientID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
+                clientID = prompt("Enter your Google Client ID to enable Google Sign-In:\n(Get one from https://console.cloud.google.com)");
+                if (!clientID) return;
+                localStorage.setItem('google_client_id', clientID.trim());
+            }
+
+            try {
+                google.accounts.id.initialize({
+                    client_id: clientID,
+                    callback: handleCredentialResponse
+                });
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed()) {
+                        console.warn("One Tap not displayed:", notification.getNotDisplayedReason());
+                        alert("Google One Tap prompt could not be displayed. Make sure third-party cookies are enabled or try again.");
+                    }
+                });
+            } catch (err) {
+                console.error("Failed to initialize Google Sign-In:", err);
+                alert("Error initializing Google Sign-In. Resetting Client ID.");
+                localStorage.removeItem('google_client_id');
+            }
+        }
+
+        function handleCredentialResponse(response) {
+            const responsePayload = decodeJwt(response.credential);
+            if (!responsePayload) {
+                alert("Failed to decode Google login token.");
+                return;
+            }
+
+            const email = responsePayload.email || "";
+            const name = responsePayload.name || "";
+
+            // Check if the account email or name contains "tiggles"
+            if (email.toLowerCase().includes('tiggles') || name.toLowerCase().includes('tiggles')) {
+                localStorage.setItem('sam_screens_disabled', 'true');
+                
+                // If currently showing Evil Sam screen, hide it and show normal content
+                const evilSam = document.getElementById('evilSamScreen');
+                if (evilSam && evilSam.style.display === 'block') {
+                    evilSam.style.display = 'none';
+                    document.getElementById('mainContent').classList.add('visible');
+                }
+
+                alert(`Access granted! Welcome, ${name}. Sam-related screens have been disabled.`);
+            } else {
+                alert(`Access denied. Google account "${email}" is not authorized.`);
+            }
+        }
+
+        function decodeJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
 
         // ── Click progress bar to seek ──────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
