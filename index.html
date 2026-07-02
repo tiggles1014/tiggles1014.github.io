@@ -6,281 +6,49 @@
     <title>aoud.lol</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            font-family: 'Inter', sans-serif;
-            color: #ff99cc;
-            background: #0a0a0a;
-        }
-        
-        .background {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image: url('bg.png');
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.75) contrast(1.1) saturate(0.9);
-            z-index: -3;
-        }
-        
-        .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 0, 25, 0.78);
-            z-index: -2;
-        }
-        /* ── Entry Splash Screen ── */
-        #entrySplash {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #0a0005;
-            cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #entrySplash.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        #entrySplash .splash-bg {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 60%, #1a0025 0%, #080010 60%, #000 100%);
-        }
-        #entrySplash .splash-overlay {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at center, rgba(80,0,40,0.55) 0%, rgba(5,0,15,0.92) 100%);
-        }
-        #entrySplash .splash-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 28px;
-            text-align: center;
-            padding: 40px;
-        }
-        #entrySplash .splash-logo {
-            font-size: 5.5rem;
-            font-weight: 300;
-            letter-spacing: 6px;
-            color: #ff99cc;
-            text-shadow: 0 0 60px rgba(255,102,170,0.8), 0 0 120px rgba(255,102,170,0.4), 3px 3px 0 #000;
-            animation: splashGlow 2.5s ease-in-out infinite alternate;
-        }
-        #entrySplash .splash-sub {
-            font-size: 1.1rem;
-            letter-spacing: 5px;
-            color: #cc77aa;
-            text-transform: uppercase;
-            font-weight: 300;
-        }
-        #entrySplash .splash-divider {
-            width: 120px;
-            height: 1px;
-            background: linear-gradient(to right, transparent, #ff66aa, transparent);
-        }
-        #entrySplash .splash-enter {
-            font-size: 0.85rem;
-            letter-spacing: 6px;
-            color: #ffbbdd;
-            text-transform: uppercase;
-            animation: splashBlink 1.8s ease-in-out infinite;
-        }
-        #entrySplash .splash-hearts {
-            font-size: 1.4rem;
-            opacity: 0.7;
-            animation: splashFloat 3s ease-in-out infinite alternate;
-        }
+        body { height: 100vh; overflow: hidden; position: relative; font-family: 'Inter', sans-serif; color: #ff99cc; background: #0a0a0a; }
+        .background, .overlay { position: absolute; inset: 0; }
+        .background { background: url('bg.png') center/cover; filter: brightness(0.75) contrast(1.1) saturate(0.9); z-index: -3; }
+        .overlay { background: rgba(15, 0, 25, 0.78); z-index: -2; }
+        #entrySplash { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0005; cursor: pointer; transition: opacity 0.8s, visibility 0.8s; }
+        #entrySplash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        #entrySplash .splash-bg, #entrySplash .splash-overlay { position: absolute; inset: 0; }
+        #entrySplash .splash-bg { background: radial-gradient(ellipse at 50% 60%, #1a0025 0%, #080010 60%, #000 100%); }
+        #entrySplash .splash-overlay { background: radial-gradient(ellipse at center, rgba(80,0,40,0.55) 0%, rgba(5,0,15,0.92) 100%); }
+        #entrySplash .splash-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; padding: 40px; }
+        #entrySplash .splash-logo { font-size: 5.5rem; font-weight: 300; letter-spacing: 6px; color: #ff99cc; text-shadow: 0 0 60px rgba(255,102,170,0.8), 0 0 120px rgba(255,102,170,0.4), 3px 3px 0 #000; animation: splashGlow 2.5s ease-in-out infinite alternate; }
+        #entrySplash .splash-sub { font-size: 1.1rem; letter-spacing: 5px; color: #cc77aa; text-transform: uppercase; font-weight: 300; }
+        #entrySplash .splash-divider { width: 120px; height: 1px; background: linear-gradient(to right, transparent, #ff66aa, transparent); }
+        #entrySplash .splash-enter { font-size: 0.85rem; letter-spacing: 6px; color: #ffbbdd; text-transform: uppercase; animation: splashBlink 1.8s ease-in-out infinite; }
+        #entrySplash .splash-hearts { font-size: 1.4rem; opacity: 0.7; animation: splashFloat 3s ease-in-out infinite alternate; }
         @keyframes splashGlow {
-            0%   { text-shadow: 0 0 40px rgba(255,102,170,0.6), 0 0 80px rgba(255,102,170,0.3), 3px 3px 0 #000; }
-            100% { text-shadow: 0 0 80px rgba(255,102,170,1), 0 0 160px rgba(255,102,170,0.6), 3px 3px 0 #000; }
+            0% { text-shadow: 0 0 40px rgba(255,102,170,0.6), 0 0 80px rgba(255,102,170,0.3), 3px 3px #000; }
+            100% { text-shadow: 0 0 80px rgba(255,102,170,1), 0 0 160px rgba(255,102,170,0.6), 3px 3px #000; }
         }
-        @keyframes splashBlink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.3; }
-        }
-        @keyframes splashFloat {
-            0%   { transform: translateY(0px); }
-            100% { transform: translateY(-8px); }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50%       { opacity: 0.4; transform: scale(0.7); }
-        }
-        /* Hide main content until splash is dismissed */
-        .content { opacity: 0; transition: opacity 0.8s ease 0.3s; }
+        @keyframes splashBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes splashFloat { to { transform: translateY(-8px); } }
+        .content { opacity: 0; transition: opacity 0.8s ease 0.3s; position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .content.visible { opacity: 1; }
-        
-        .content {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 5.2rem;
-            letter-spacing: 4px;
-            color: #ff99cc;
-            text-shadow: 3px 3px 0 #000, -2px -2px 0 #000;
-            margin-bottom: 8px;
-            font-weight: 300;
-        }
-        
-        .subtitle {
-            font-size: 2.1rem;
-            color: #ff77bb;
-            margin-bottom: 50px;
-            font-weight: 300;
-        }
-        
-        .player {
-            width: 440px;
-            background: rgba(25, 5, 35, 0.96);
-            border: 4px solid #ff66aa;
-            padding: 25px 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 35px rgba(255, 102, 170, 0.5);
-            margin-bottom: 40px;
-        }
-        
-        .now-playing {
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            margin-bottom: 14px;
-            color: #ffbbdd;
-            text-transform: uppercase;
-        }
-        .song-title {
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-            color: #ff99cc;
-            font-weight: 400;
-        }
-        .song-meta {
-            font-size: 0.9rem;
-            color: #cc77aa;
-            margin-bottom: 4px;
-        }
-        
-        .progress-container {
-            height: 6px;
-            background: #330022;
-            margin: 20px 0;
-            position: relative;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, #ff66aa, #cc44ff);
-            transition: width 0.9s linear;
-            border-radius: 3px;
-        }
-        
-        .time {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: #bb77aa;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 22px;
-        }
-        
-        button {
-            background: transparent;
-            border: 2px solid #ff66aa;
-            color: #ffccdd;
-            padding: 9px 22px;
-            font-size: 0.88rem;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 1px;
-            transition: background 0.15s, color 0.15s;
-            border-radius: 4px;
-        }
-        
-        button:hover {
-            background: #ff66aa;
-            color: #000;
-        }
-        /* Hidden YouTube player — real size, off-screen */
-        #ytPlayer {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 480px;
-            height: 270px;
-            pointer-events: none;
-        }
-
-        /* ── Evil Sam Screen ── */
-        #evilSamScreen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background-image: url('evil-sam.jpg');
-            background-size: 100% 100%;
-            background-position: top center;
-        }
-        #evilSamScreen .evil-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(80, 0, 0, 0.35);
-        }
-        #evilSamScreen .evil-text {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 28px 20px 24px;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(2.2rem, 6vw, 4rem);
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow:
-                0 0 20px rgba(255,0,0,0.9),
-                0 0 50px rgba(255,0,0,0.6),
-                3px 3px 0 #000,
-                -2px -2px 0 #000,
-                2px -2px 0 #000,
-                -2px 2px 0 #000;
-            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%);
-            animation: evilPulse 1.6s ease-in-out infinite alternate;
-        }
+        h1 { font-size: 5.2rem; letter-spacing: 4px; color: #ff99cc; text-shadow: 3px 3px 0 #000, -2px -2px 0 #000; margin-bottom: 8px; font-weight: 300; }
+        .subtitle { font-size: 2.1rem; color: #ff77bb; margin-bottom: 50px; font-weight: 300; }
+        .player { width: 440px; background: rgba(25, 5, 35, 0.96); border: 4px solid #ff66aa; padding: 25px 30px; border-radius: 8px; box-shadow: 0 0 35px rgba(255, 102, 170, 0.5); margin-bottom: 40px; }
+        .now-playing { font-size: 0.85rem; letter-spacing: 3px; margin-bottom: 14px; color: #ffbbdd; text-transform: uppercase; }
+        .song-title { font-size: 1.4rem; margin-bottom: 6px; color: #ff99cc; font-weight: 400; }
+        .song-meta { font-size: 0.9rem; color: #cc77aa; margin-bottom: 4px; }
+        .progress-container { height: 6px; background: #330022; margin: 20px 0; position: relative; cursor: pointer; border-radius: 3px; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(to right, #ff66aa, #cc44ff); transition: width 0.9s linear; border-radius: 3px; }
+        .time { display: flex; justify-content: space-between; font-size: 0.85rem; color: #bb77aa; }
+        .controls { display: flex; justify-content: center; gap: 16px; margin-top: 22px; }
+        button { background: transparent; border: 2px solid #ff66aa; color: #ffccdd; padding: 9px 22px; font-size: 0.88rem; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 1px; transition: background 0.15s, color 0.15s; border-radius: 4px; }
+        button:hover { background: #ff66aa; color: #000; }
+        #ytPlayer { position: fixed; left: -9999px; top: 0; width: 480px; height: 270px; pointer-events: none; }
+        #evilSamScreen { display: none; position: fixed; inset: 0; z-index: 500; background: url('evil-sam.jpg') top center/100% 100%; }
+        #evilSamScreen .evil-overlay { position: absolute; inset: 0; background: rgba(80, 0, 0, 0.35); }
+        #evilSamScreen .evil-text { position: absolute; top: 0; left: 0; right: 0; padding: 28px 20px 24px; text-align: center; font-family: 'Inter', sans-serif; font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%); animation: evilPulse 1.6s ease-in-out infinite alternate; }
         @keyframes evilPulse {
-            0%   { text-shadow: 0 0 20px rgba(255,0,0,0.9), 0 0 50px rgba(255,0,0,0.6), 3px 3px 0 #000, -2px -2px 0 #000; }
-            100% { text-shadow: 0 0 40px rgba(255,50,0,1),  0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }
+            0% { text-shadow: 0 0 20px rgba(255,0,0,0.9), 0 0 50px rgba(255,0,0,0.6), 3px 3px 0 #000, -2px -2px 0 #000; }
+            100% { text-shadow: 0 0 40px rgba(255,50,0,1), 0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }#000; }
         }
     </style>
     <!-- Google Identity Services client library -->
@@ -344,8 +112,7 @@
         // Load the YouTube IFrame Player API asynchronously
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
         const playlist = [
             { "title": "Caramelldansen", "artist": "Caramella Girls", "ytId": "PDJLvF1dUek" },
@@ -380,210 +147,105 @@
             { "title": "Less Intro", "artist": "saturn", "ytId": "0YSBgaTOHOE" }
         ];
 
-        const progressBar   = document.getElementById('progressBar');
+        const progressBar = document.getElementById('progressBar');
         const currentTimeEl = document.getElementById('currentTime');
-        const playPauseBtn  = document.getElementById('playPauseBtn');
-        const volBtn        = document.getElementById('volBtn');
-        const unmuteBanner  = document.getElementById('unmuteBanner');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volBtn = document.getElementById('volBtn');
         
-        let player;
-        let isPlaying = true;
-        let isMuted   = true;
-        let isBoosted = false;
-        
-        let currentTrack = null;
-        let playedTracks = [];
+        let player, isPlaying = true, isMuted = true, isBoosted = false, currentTrack = null, playedTracks = [];
 
-        // ── YouTube IFrame Player API Initialization ────────────────────
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('ytPlayer', {
-                height: '270',
-                width: '480',
-                videoId: playlist[0].ytId,
-                playerVars: {
-                    'autoplay': 1,
-                    'mute': 1,
-                    'controls': 0,
-                    'enablejsapi': 1,
-                    'rel': 0,
-                    'modestbranding': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
+                height: '270', width: '480', videoId: playlist[0].ytId,
+                playerVars: { autoplay: 1, mute: 1, controls: 0, enablejsapi: 1, rel: 0, modestbranding: 1 },
+                events: { onReady: () => playRandomTrack(), onStateChange: (e) => e.data === YT.PlayerState.ENDED && playRandomTrack(), onError: () => playRandomTrack() }
             });
         }
 
-        function onPlayerReady(event) {
-            playRandomTrack();
-        }
-
-        function onPlayerStateChange(event) {
-            // Pick a new random song when the current one ends
-            if (event.data === YT.PlayerState.ENDED) {
-                playRandomTrack();
-            }
-        }
-
-        function onPlayerError(event) {
-            console.warn("YouTube Player error encountered, skipping to next track. Error code:", event.data);
-            playRandomTrack();
-        }
-
-        // ── Track Selection ─────────────────────────────────────────────
         function playRandomTrack() {
-            if (playlist.length === 0) return;
-            
-            // Avoid repeating songs until all have been played
-            if (playedTracks.length >= playlist.length) {
-                playedTracks = [];
-            }
-            
-            let availableTracks = playlist.filter(track => !playedTracks.includes(track.ytId));
-            if (availableTracks.length === 0) {
-                availableTracks = playlist;
-                playedTracks = [];
-            }
-            
-            const randomIndex = Math.floor(Math.random() * availableTracks.length);
-            const track = availableTracks[randomIndex];
+            if (!playlist.length) return;
+            if (playedTracks.length >= playlist.length) playedTracks = [];
+            const avail = playlist.filter(t => !playedTracks.includes(t.ytId));
+            const track = avail[Math.floor(Math.random() * avail.length)];
             playedTracks.push(track.ytId);
-            
             currentTrack = track;
-            
-            // Update UI with details
+
             document.querySelector('.song-title').textContent = track.title;
             document.querySelector('.song-meta').innerHTML = `${track.artist} &nbsp;·&nbsp; 0:00`;
-            document.getElementById('currentTime').textContent = '0:00';
+            currentTimeEl.textContent = '0:00';
             document.getElementById('duration').textContent = '0:00';
             progressBar.style.width = '0%';
-            
-            if (player && player.loadVideoById) {
-                player.loadVideoById({
-                    videoId: track.ytId,
-                    startSeconds: 0
-                });
-                
+
+            if (player?.loadVideoById) {
+                player.loadVideoById({ videoId: track.ytId, startSeconds: 0 });
                 isPlaying = true;
                 playPauseBtn.textContent = '⏸ Pause';
-                
-                if (isMuted) {
-                    player.mute();
-                } else {
-                    player.unMute();
-                    player.setVolume(100);
-                }
+                isMuted ? player.mute() : (player.unMute(), player.setVolume(100));
             }
         }
 
-        // ── Enter site & unmute on splash click ────────────────────────
         function enterSite() {
-            const splash = document.getElementById('entrySplash');
-            const content = document.getElementById('mainContent');
-            splash.classList.add('hidden');
-
-            // 1/5 chance for Evil Sam screen (only if not disabled by tiggles)
-            const samDisabled = localStorage.getItem('sam_screens_disabled') === 'true';
-            const isEvil = !samDisabled && Math.random() < 0.2;
+            document.getElementById('entrySplash').classList.add('hidden');
+            const isEvil = localStorage.getItem('sam_screens_disabled') !== 'true' && Math.random() < 0.2;
             if (isEvil) {
                 document.getElementById('evilSamScreen').style.display = 'block';
-                // Don't show normal content or the music player
-                // content stays invisible — music still plays
             } else {
-                content.classList.add('visible');
-            }
-
-            // Always update state variables immediately upon entering site to avoid race condition
-            isMuted = false;
-            isBoosted = true;
-            if (!isEvil) {
+                document.getElementById('mainContent').classList.add('visible');
                 volBtn.textContent = '🔇 Normal';
             }
-
-            if (player && player.unMute) {
+            isMuted = false;
+            isBoosted = true;
+            if (player?.unMute) {
                 player.unMute();
                 player.setVolume(100);
             }
         }
 
-        // ── Play / Pause ────────────────────────────────────────────────
         function togglePlay() {
-            if (!player || !player.pauseVideo) return;
-            if (isPlaying) {
-                player.pauseVideo();
-                isPlaying = false;
-                playPauseBtn.textContent = '▶ Play';
-            } else {
-                player.playVideo();
-                isPlaying = true;
-                playPauseBtn.textContent = '⏸ Pause';
-            }
+            if (!player?.pauseVideo) return;
+            isPlaying = !isPlaying;
+            isPlaying ? player.playVideo() : player.pauseVideo();
+            playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
         }
 
-        // ── Volume boost ────────────────────────────────────────────────
         function toggleBoost() {
-            if (!player || !player.setVolume) return;
-            if (isBoosted) {
-                player.setVolume(50);
-                isBoosted = false;
-                volBtn.textContent = '🔊 Ultra Loud';
-            } else {
-                player.setVolume(100);
-                isBoosted = true;
-                volBtn.textContent = '🔇 Normal';
-            }
+            if (!player?.setVolume) return;
+            isBoosted = !isBoosted;
+            player.setVolume(isBoosted ? 100 : 50);
+            volBtn.textContent = isBoosted ? '🔇 Normal' : '🔊 Ultra Loud';
         }
 
-        // ── Helper: Format seconds to M:SS ──────────────────────────────
-        function formatTime(seconds) {
-            if (isNaN(seconds) || seconds === null) return "0:00";
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        function formatTime(s) {
+            if (isNaN(s) || s === null) return "0:00";
+            return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
         }
 
-        // ── Progress Bar Update (Accurate from YouTube player) ──────────
         setInterval(() => {
-            if (player && player.getCurrentTime && isPlaying) {
-                const current = player.getCurrentTime();
-                const duration = player.getDuration();
-                if (duration > 0) {
-                    progressBar.style.width = (current / duration * 100) + '%';
-                    currentTimeEl.textContent = formatTime(current);
-                    document.getElementById('duration').textContent = formatTime(duration);
-                    
-                    const songMeta = document.querySelector('.song-meta');
-                    if (songMeta && currentTrack) {
-                        songMeta.innerHTML = `${currentTrack.artist} &nbsp;·&nbsp; ${formatTime(duration)}`;
-                    }
+            if (player?.getCurrentTime && isPlaying) {
+                const cur = player.getCurrentTime(), dur = player.getDuration();
+                if (dur > 0) {
+                    progressBar.style.width = (cur / dur * 100) + '%';
+                    currentTimeEl.textContent = formatTime(cur);
+                    document.getElementById('duration').textContent = formatTime(dur);
+                    document.querySelector('.song-meta').innerHTML = `${currentTrack?.artist} &nbsp;·&nbsp; ${formatTime(dur)}`;
                 }
             }
         }, 500);
 
-        // ── Secret keys: F10 to force Evil Sam, Insert to toggle/disable Sam screens ──
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', (e) => {
             if (e.key === 'F10') {
                 e.preventDefault();
-                if (localStorage.getItem('sam_screens_disabled') === 'true') {
-                    alert("Sam-related screens are disabled for this account.");
-                    return;
-                }
-                const splash = document.getElementById('entrySplash');
-                splash.classList.add('hidden');
+                if (localStorage.getItem('sam_screens_disabled') === 'true') return alert("Sam-related screens are disabled.");
+                document.getElementById('entrySplash').classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('visible');
                 document.getElementById('evilSamScreen').style.display = 'block';
-                if (player && player.unMute) {
-                    player.unMute();
-                    player.setVolume(100);
-                    isMuted = false;
-                }
+                isMuted = false;
+                player?.unMute?.();
+                player?.setVolume?.(100);
             } else if (e.key === 'Insert') {
                 e.preventDefault();
                 if (localStorage.getItem('sam_screens_disabled') === 'true') {
-                    const confirmEnable = confirm("Sam-related screens are currently DISABLED. Do you want to RE-ENABLE them?");
-                    if (confirmEnable) {
+                    if (confirm("Sam-related screens are currently DISABLED. Re-enable them?")) {
                         localStorage.removeItem('sam_screens_disabled');
                         alert("Sam-related screens have been re-enabled.");
                     }
@@ -593,84 +255,52 @@
             }
         });
 
-        // ── Google Identity Services authentication for 'tiggles' ────────
         function initGoogleSignIn() {
-            if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-                alert("Google Identity library is still loading or blocked. Please wait a moment and try again.");
-                return;
-            }
-
+            if (typeof google === 'undefined' || !google.accounts?.id) return alert("Google Identity library is not ready. Try again.");
             let clientID = localStorage.getItem('google_client_id');
-            if (!clientID || clientID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
-                clientID = prompt("Enter your Google Client ID to enable Google Sign-In:\n(Get one from https://console.cloud.google.com)");
+            if (!clientID) {
+                clientID = prompt("Enter your Google Client ID (from https://console.cloud.google.com):");
                 if (!clientID) return;
                 localStorage.setItem('google_client_id', clientID.trim());
             }
-
             try {
-                google.accounts.id.initialize({
-                    client_id: clientID,
-                    callback: handleCredentialResponse
-                });
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed()) {
-                        console.warn("One Tap not displayed:", notification.getNotDisplayedReason());
-                        alert("Google One Tap prompt could not be displayed. Make sure third-party cookies are enabled or try again.");
-                    }
+                google.accounts.id.initialize({ client_id: clientID, callback: handleCredentialResponse });
+                google.accounts.id.prompt((notif) => {
+                    if (notif.isNotDisplayed()) alert("Google One Tap blocked. Enable cookies/popups and retry.");
                 });
             } catch (err) {
-                console.error("Failed to initialize Google Sign-In:", err);
-                alert("Error initializing Google Sign-In. Resetting Client ID.");
+                alert("Google Sign-In initialization failed. Resetting Client ID.");
                 localStorage.removeItem('google_client_id');
             }
         }
 
-        function handleCredentialResponse(response) {
-            const responsePayload = decodeJwt(response.credential);
-            if (!responsePayload) {
-                alert("Failed to decode Google login token.");
-                return;
-            }
-
-            const email = responsePayload.email || "";
-            const name = responsePayload.name || "";
-
-            // Check if the account email or name contains "tiggles"
+        function handleCredentialResponse(res) {
+            const payload = decodeJwt(res.credential);
+            if (!payload) return alert("Failed to decode login token.");
+            const email = payload.email || "", name = payload.name || "";
             if (email.toLowerCase().includes('tiggles') || name.toLowerCase().includes('tiggles')) {
                 localStorage.setItem('sam_screens_disabled', 'true');
-                
-                // If currently showing Evil Sam screen, hide it and show normal content
-                const evilSam = document.getElementById('evilSamScreen');
-                if (evilSam && evilSam.style.display === 'block') {
-                    evilSam.style.display = 'none';
+                const evil = document.getElementById('evilSamScreen');
+                if (evil.style.display === 'block') {
+                    evil.style.display = 'none';
                     document.getElementById('mainContent').classList.add('visible');
                 }
-
-                alert(`Access granted! Welcome, ${name}. Sam-related screens have been disabled.`);
+                alert(`Access granted! Welcome ${name}. Sam screens disabled.`);
             } else {
-                alert(`Access denied. Google account "${email}" is not authorized.`);
+                alert(`Access denied: "${email}"`);
             }
         }
 
         function decodeJwt(token) {
             try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                return null;
-            }
+                return JSON.parse(decodeURIComponent(escape(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))));
+            } catch (e) { return null; }
         }
 
-        // ── Click progress bar to seek ──────────────────────────────────
         document.getElementById('progressContainer').addEventListener('click', function(e) {
-            if (player && player.getDuration) {
-                const ratio  = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
-                const newTime = ratio * player.getDuration();
-                player.seekTo(newTime, true);
+            if (player?.getDuration) {
+                const ratio = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
+                player.seekTo(ratio * player.getDuration(), true);
             }
         });
     </script>
