@@ -65,7 +65,7 @@
             <div class="splash-enter">✦ click anywhere to enter ✦</div>
         </div>
     </div>
-    <!-- Evil Sam alternate background (1/5 chance) -->
+    <!-- Evil Sam alternate background (1/15 chance) -->
     <div id="evilSamScreen">
         <div class="evil-overlay"></div>
         <div class="evil-text">Evil Sam has the payload</div>
@@ -184,7 +184,7 @@
 
         function enterSite() {
             document.getElementById('entrySplash').classList.add('hidden');
-            const isEvil = localStorage.getItem('sam_screens_disabled') !== 'true' && Math.random() < 0.2;
+            const isEvil = localStorage.getItem('sam_screens_disabled') !== 'true' && Math.random() < 1/15;
             if (isEvil) {
                 document.getElementById('evilSamScreen').style.display = 'block';
             } else {
