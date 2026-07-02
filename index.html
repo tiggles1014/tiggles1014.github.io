@@ -51,8 +51,6 @@
             100% { text-shadow: 0 0 40px rgba(255,50,0,1), 0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }#000; }
         }
     </style>
-    <!-- Google Identity Services client library -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <!-- Full-screen entry splash -->
@@ -245,57 +243,19 @@
             } else if (e.key === 'Insert') {
                 e.preventDefault();
                 if (localStorage.getItem('sam_screens_disabled') === 'true') {
-                    if (confirm("Sam-related screens are currently DISABLED. Re-enable them?")) {
-                        localStorage.removeItem('sam_screens_disabled');
-                        alert("Sam-related screens have been re-enabled.");
-                    }
+                    localStorage.removeItem('sam_screens_disabled');
+                    alert("Sam-related screens have been re-enabled.");
                 } else {
-                    initGoogleSignIn();
+                    localStorage.setItem('sam_screens_disabled', 'true');
+                    const evil = document.getElementById('evilSamScreen');
+                    if (evil.style.display === 'block') {
+                        evil.style.display = 'none';
+                        document.getElementById('mainContent').classList.add('visible');
+                    }
+                    alert("Sam-related screens have been disabled.");
                 }
             }
         });
-
-        function initGoogleSignIn() {
-            if (typeof google === 'undefined' || !google.accounts?.id) return alert("Google Identity library is not ready. Try again.");
-            let clientID = localStorage.getItem('google_client_id');
-            if (!clientID) {
-                clientID = prompt("Enter your Google Client ID (from https://console.cloud.google.com):");
-                if (!clientID) return;
-                localStorage.setItem('google_client_id', clientID.trim());
-            }
-            try {
-                google.accounts.id.initialize({ client_id: clientID, callback: handleCredentialResponse });
-                google.accounts.id.prompt((notif) => {
-                    if (notif.isNotDisplayed()) alert("Google One Tap blocked. Enable cookies/popups and retry.");
-                });
-            } catch (err) {
-                alert("Google Sign-In initialization failed. Resetting Client ID.");
-                localStorage.removeItem('google_client_id');
-            }
-        }
-
-        function handleCredentialResponse(res) {
-            const payload = decodeJwt(res.credential);
-            if (!payload) return alert("Failed to decode login token.");
-            const email = payload.email || "", name = payload.name || "";
-            if (email.toLowerCase().includes('tiggles') || name.toLowerCase().includes('tiggles')) {
-                localStorage.setItem('sam_screens_disabled', 'true');
-                const evil = document.getElementById('evilSamScreen');
-                if (evil.style.display === 'block') {
-                    evil.style.display = 'none';
-                    document.getElementById('mainContent').classList.add('visible');
-                }
-                alert(`Access granted! Welcome ${name}. Sam screens disabled.`);
-            } else {
-                alert(`Access denied: "${email}"`);
-            }
-        }
-
-        function decodeJwt(token) {
-            try {
-                return JSON.parse(decodeURIComponent(escape(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))));
-            } catch (e) { return null; }
-        }
 
         document.getElementById('progressContainer').addEventListener('click', function(e) {
             if (player?.getDuration) {
