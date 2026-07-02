@@ -42,7 +42,7 @@
         .controls { display: flex; justify-content: center; gap: 16px; margin-top: 22px; }
         button { background: transparent; border: 2px solid #ff66aa; color: #ffccdd; padding: 9px 22px; font-size: 0.88rem; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 1px; transition: background 0.15s, color 0.15s; border-radius: 4px; }
         button:hover { background: #ff66aa; color: #000; }
-        #ytPlayer { position: fixed; left: -9999px; top: 0; width: 480px; height: 270px; pointer-events: none; }
+        #ytPlayer { position: fixed; left: 0; top: 0; width: 480px; height: 270px; pointer-events: none; z-index: -10; opacity: 0.001; }
         #evilSamScreen { display: none; position: fixed; inset: 0; z-index: 500; background: url('evil-sam.jpg') top center/100% 100%; }
         #evilSamScreen .evil-overlay { position: absolute; inset: 0; background: rgba(80, 0, 0, 0.35); }
         #evilSamScreen .evil-text { position: absolute; top: 0; left: 0; right: 0; padding: 28px 20px 24px; text-align: center; font-family: 'Inter', sans-serif; font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%); animation: evilPulse 1.6s ease-in-out infinite alternate; }
@@ -152,16 +152,8 @@
         
         let player, isPlaying = true, isMuted = true, isBoosted = false, currentTrack = null, playedTracks = [];
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('ytPlayer', {
-                height: '270', width: '480', videoId: playlist[0].ytId,
-                playerVars: { autoplay: 1, mute: 1, controls: 0, enablejsapi: 1, rel: 0, modestbranding: 1 },
-                events: { onReady: () => playRandomTrack(), onStateChange: (e) => e.data === YT.PlayerState.ENDED && playRandomTrack(), onError: () => playRandomTrack() }
-            });
-        }
-
-        function playRandomTrack() {
-            if (!playlist.length) return;
+        function selectRandomTrack() {
+            if (!playlist.length) return null;
             if (playedTracks.length >= playlist.length) playedTracks = [];
             const avail = playlist.filter(t => !playedTracks.includes(t.ytId));
             const track = avail[Math.floor(Math.random() * avail.length)];
@@ -173,12 +165,50 @@
             currentTimeEl.textContent = '0:00';
             document.getElementById('duration').textContent = '0:00';
             progressBar.style.width = '0%';
+            return track;
+        }
 
-            if (player?.loadVideoById) {
+        function onYouTubeIframeAPIReady() {
+            const track = selectRandomTrack();
+            if (!track) return;
+            player = new YT.Player('ytPlayer', {
+                height: '270', width: '480', videoId: track.ytId,
+                playerVars: { autoplay: 1, mute: 1, controls: 0, enablejsapi: 1, rel: 0, modestbranding: 1 },
+                events: { 
+                    onReady: () => {
+                        isPlaying = true;
+                        playPauseBtn.textContent = '⏸ Pause';
+                        if (!isMuted) {
+                            if (typeof player.unMute === 'function') player.unMute();
+                            if (typeof player.setVolume === 'function') player.setVolume(100);
+                            if (typeof player.playVideo === 'function') player.playVideo();
+                        }
+                    }, 
+                    onStateChange: (e) => {
+                        if (e.data === YT.PlayerState.ENDED) {
+                            playRandomTrack();
+                        }
+                    }, 
+                    onError: () => playRandomTrack() 
+                }
+            });
+        }
+
+        function playRandomTrack() {
+            const track = selectRandomTrack();
+            if (!track) return;
+
+            if (player && typeof player.loadVideoById === 'function') {
                 player.loadVideoById({ videoId: track.ytId, startSeconds: 0 });
                 isPlaying = true;
                 playPauseBtn.textContent = '⏸ Pause';
-                isMuted ? player.mute() : (player.unMute(), player.setVolume(100));
+                if (isMuted) {
+                    if (typeof player.mute === 'function') player.mute();
+                } else {
+                    if (typeof player.unMute === 'function') player.unMute();
+                    if (typeof player.setVolume === 'function') player.setVolume(100);
+                    if (typeof player.playVideo === 'function') player.playVideo();
+                }
             }
         }
 
@@ -193,9 +223,10 @@
             }
             isMuted = false;
             isBoosted = true;
-            if (player?.unMute) {
-                player.unMute();
-                player.setVolume(100);
+            if (player) {
+                if (typeof player.unMute === 'function') player.unMute();
+                if (typeof player.setVolume === 'function') player.setVolume(100);
+                if (typeof player.playVideo === 'function') player.playVideo();
             }
         }
 
