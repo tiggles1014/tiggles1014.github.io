@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAIL VR Division | MLA</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #040806;
+            --green-primary: #00ff66;
+            --green-secondary: #10b981;
+            --green-glow: rgba(0, 255, 102, 0.45);
+            --text-main: #f5faf7;
+            --text-muted: #abbab2;
+            --card-bg: rgba(10, 20, 15, 0.7);
+            --card-border: rgba(0, 255, 102, 0.15);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Animated grid background with green radial light */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 50% 25%, rgba(0, 255, 102, 0.1) 0%, transparent 65%),
+                linear-gradient(to right, rgba(0, 255, 102, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 255, 102, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 45px 45px, 45px 45px;
+            z-index: -1;
+            animation: gridPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes gridPulse {
+            0% { opacity: 0.85; }
+            100% { opacity: 1; }
+        }
+
+        /* Ambient glow blob */
+        .ambient-glow-green {
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 102, 0.15) 0%, transparent 70%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        header {
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 102, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--green-primary);
+            text-shadow: 0 0 15px var(--green-glow);
+        }
+
+        .btn-back {
+            background: rgba(0, 255, 102, 0.05);
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            color: var(--green-primary);
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            background: var(--green-primary);
+            color: #000;
+            box-shadow: 0 0 20px var(--green-glow);
+            transform: translateX(-4px);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 90%;
+            margin: 4rem auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .division-badge {
+            background: rgba(0, 255, 102, 0.1);
+            border: 1px solid var(--green-primary);
+            color: var(--green-secondary);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        .hero h1 span {
+            color: var(--green-primary);
+            text-shadow: 0 0 25px var(--green-glow);
+        }
+
+        /* Structured Main Panel */
+        .content-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 3rem;
+        }
+
+        .panel-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .panel-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--green-primary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            padding: 1.25rem;
+            border-left: 3px solid var(--green-primary);
+            background: rgba(0, 255, 102, 0.02);
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* League Info Modules */
+        .grid-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .module {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 102, 0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .module:hover {
+            border-color: var(--green-primary);
+            background: rgba(0, 255, 102, 0.02);
+            transform: translateY(-4px);
+            box-shadow: 0 5px 20px rgba(0, 255, 102, 0.05);
+        }
+
+        .module-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .module-body {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        footer {
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 102, 0.1);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: rgba(4, 8, 6, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-top: auto;
+        }
+
+        footer span {
+            color: var(--green-primary);
+        }
+
+        /* Tab Navigation */
+        .panel-tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid rgba(0, 255, 102, 0.15);
+            margin-bottom: 2.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--green-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--green-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--green-primary);
+            box-shadow: 0 0 10px var(--green-glow);
+            border-radius: 2px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 255, 102, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 650px;
+        }
+
+        .leaderboard-table th {
+            background: rgba(0, 255, 102, 0.05);
+            padding: 1rem 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--green-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 255, 102, 0.15);
+        }
+
+        .leaderboard-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 1rem;
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        .leaderboard-row:hover td {
+            background: rgba(0, 255, 102, 0.02);
+        }
+
+        .leaderboard-row {
+            border-left: 4px solid transparent;
+            transition: var(--transition);
+        }
+
+        /* Hover states with colored left border matching team colors */
+        .leaderboard-row.relentless:hover { border-left-color: #C8102E; }
+        .leaderboard-row.riptide:hover { border-left-color: #D4A373; }
+        .leaderboard-row.vintage:hover { border-left-color: #1E60D5; }
+        .leaderboard-row.killzone:hover { border-left-color: #F8F9FA; }
+        .leaderboard-row.shift:hover { border-left-color: #555555; }
+        .leaderboard-row.integrity:hover { border-left-color: #B0B0C0; }
+        .leaderboard-row.chronix:hover { border-left-color: #2B7A58; }
+        .leaderboard-row.redwave:hover { border-left-color: #FF0000; }
+        .leaderboard-row.xenon:hover { border-left-color: #4D2C91; }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .team-color-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .leaderboard-row:nth-child(1) .rank-badge {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .leaderboard-row:nth-child(2) .rank-badge {
+            background: linear-gradient(135deg, #c0c0c0, #808080);
+            color: #000;
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        }
+
+        .leaderboard-row:nth-child(3) .rank-badge {
+            background: linear-gradient(135deg, #cd7f32, #8b4513);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+        }
+
+        .points-highlight {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: var(--green-primary);
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
+        }
+
+        .leaderboard-footer {
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 255, 102, 0.1);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .leaderboard-footer strong {
+            color: var(--green-primary);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 1.5rem 5%;
+            }
+            .content-panel {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow-green"></div>
+
+    <header>
+        <a href="index.html" class="logo">
+            MLA / <span>VAIL VR</span>
+        </a>
+        <a href="index.html" class="btn-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            MLA Home
+        </a>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="division-badge">Active MLA Division</div>
+            <h1>VAIL VR <span>Tactical League</span></h1>
+        </section>
+
+        <section class="content-panel">
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab-btn" onclick="switchTab('rankings')">League Rankings</button>
+            </div>
+
+            <!-- OVERVIEW TAB CONTENT -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="panel-section">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        Division Overview
+                    </h2>
+                    <div class="section-desc">
+                        Want to get into VAIL Esports but don't know if your good enough or just want to test the waters? Well VML has you covered! We help train new players and connect them with some of the best people in VAIL Esports!
+                        <br><br>
+                        <div style="margin-top: 1rem;">
+                            <a href="https://discord.gg/HZakaeuN4s" target="_blank" class="btn-back" style="background: rgba(0, 255, 102, 0.1); border-color: var(--green-primary); transform: none; display: inline-flex; gap: 8px;">
+                                <svg width="18" height="18" viewBox="0 0 127.14 96.36" fill="currentColor" style="vertical-align: middle;">
+                                    <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.95,54.65,1,77.53a105.53,105.53,0,0,0,32,16.19,79,79,0,0,0,6.77-11,68.17,68.17,0,0,1-10.64-5.12c.9-.66,1.8-1.34,2.65-2a75.58,75.58,0,0,0,71.72,0c.85.71,1.75,1.39,2.65,2a67.89,67.89,0,0,1-10.64,5.12,79.82,79.82,0,0,0,6.77,11,105.34,105.34,0,0,0,32-16.19C130.34,48,124.38,25.2,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.9,46,53.9,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.14,46,96.14,53,91,65.69,84.69,65.69Z"/>
+                                </svg>
+                                Join official VML Discord
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2 class="section-title">League Features</h2>
+                    <div class="grid-modules">
+                        <div class="module">
+                            <div class="module-header">5v5 Competitions</div>
+                            <div class="module-body">Full squad coordination across custom mapped arenas. Scheduled weekly match ups.</div>
+                        </div>
+                        <div class="module">
+                            <div class="module-header">Global Brackets</div>
+                            <div class="module-body">Track your ranking on the official leaderboards and push through standard divisional tiers.</div>
+                        </div>
+                        <div class="module">
+                            <div class="module-header">Prizing & Accolades</div>
+                            <div class="module-body">Exclusive virtual trophies, profile banners, and rewards for the highest performing teams.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEAGUE RANKINGS TAB CONTENT -->
+            <div id="tab-rankings" class="tab-content">
+                <div class="panel-section">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        Season 3 Leaderboard
+                    </h2>
+                    
+                    <div class="leaderboard-container">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Team</th>
+                                    <th>Points</th>
+                                    <th>Map Wins</th>
+                                    <th>Match Wins</th>
+                                    <th>Total MMR</th>
+                                    <th>Played</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Relentless Academy -->
+                                <tr class="leaderboard-row relentless">
+                                    <td><span class="rank-badge">1</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #C8102E; color: #C8102E; box-shadow: 0 0 8px #C8102E;"></span>
+                                            Relentless Academy
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">203</span></td>
+                                    <td>20</td>
+                                    <td>7</td>
+                                    <td>313</td>
+                                    <td>8</td>
+                                </tr>
+                                <!-- Riptide Shores -->
+                                <tr class="leaderboard-row riptide">
+                                    <td><span class="rank-badge">2</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #D4A373; color: #D4A373; box-shadow: 0 0 8px #D4A373;"></span>
+                                            Riptide Shores
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">183</span></td>
+                                    <td>20</td>
+                                    <td>7</td>
+                                    <td>293</td>
+                                    <td>7</td>
+                                </tr>
+                                <!-- Vintage -->
+                                <tr class="leaderboard-row vintage">
+                                    <td><span class="rank-badge">3</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #1E60D5; color: #1E60D5; box-shadow: 0 0 8px #1E60D5;"></span>
+                                            Vintage
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">192</span></td>
+                                    <td>11</td>
+                                    <td>5</td>
+                                    <td>264</td>
+                                    <td>10</td>
+                                </tr>
+                                <!-- Kill Zone -->
+                                <tr class="leaderboard-row killzone">
+                                    <td><span class="rank-badge">4</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #F8F9FA; color: #F8F9FA; box-shadow: 0 0 8px #F8F9FA;"></span>
+                                            Kill Zone
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">173</span></td>
+                                    <td>15</td>
+                                    <td>5</td>
+                                    <td>253</td>
+                                    <td>9</td>
+                                </tr>
+                                <!-- Sh1ft -->
+                                <tr class="leaderboard-row shift">
+                                    <td><span class="rank-badge">5</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #555555; color: #555555; box-shadow: 0 0 8px #555555;"></span>
+                                            Sh1ft
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">119</span></td>
+                                    <td>9</td>
+                                    <td>3</td>
+                                    <td>167</td>
+                                    <td>9</td>
+                                </tr>
+                                <!-- Integrity -->
+                                <tr class="leaderboard-row integrity">
+                                    <td><span class="rank-badge">6</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #B0B0C0; color: #B0B0C0; box-shadow: 0 0 8px #B0B0C0;"></span>
+                                            Integrity
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">98</span></td>
+                                    <td>8</td>
+                                    <td>3</td>
+                                    <td>144</td>
+                                    <td>5</td>
+                                </tr>
+                                <!-- Chronix -->
+                                <tr class="leaderboard-row chronix">
+                                    <td><span class="rank-badge">7</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #2B7A58; color: #2B7A58; box-shadow: 0 0 8px #2B7A58;"></span>
+                                            Chronix
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">95</span></td>
+                                    <td>5</td>
+                                    <td>1</td>
+                                    <td>115</td>
+                                    <td>8</td>
+                                </tr>
+                                <!-- Red Wave -->
+                                <tr class="leaderboard-row redwave">
+                                    <td><span class="rank-badge">8</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #FF0000; color: #FF0000; box-shadow: 0 0 8px #FF0000;"></span>
+                                            Red Wave
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">64</span></td>
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td>80</td>
+                                    <td>4</td>
+                                </tr>
+                                <!-- Xenon -->
+                                <tr class="leaderboard-row xenon">
+                                    <td><span class="rank-badge">9</span></td>
+                                    <td>
+                                        <div class="team-cell">
+                                            <span class="team-color-indicator" style="background-color: #4D2C91; color: #4D2C91; box-shadow: 0 0 8px #4D2C91;"></span>
+                                            Xenon
+                                        </div>
+                                    </td>
+                                    <td><span class="points-highlight">33</span></td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>47</td>
+                                    <td>4</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="leaderboard-footer">
+                            <strong>Formula to decide rankings:</strong> Points + Map Wins (weight x2) + Match Wins (weight x10) = Total MMR.
+                            <br>
+                            <em>Last Updated: June 28, 2026: MoT. ND = Not Decided.</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 <span>Minor League Association</span>. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            // Remove active classes
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected elements
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
