@@ -3,658 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minor League Association | MLA</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <title>aoud.lol</title>
     <style>
-        :root {
-            --bg-color: #0c0805;
-            --orange-primary: #ff6a00;
-            --orange-secondary: #ff8833;
-            --orange-glow: rgba(255, 106, 0, 0.45);
-            --green-primary: #00ff66;
-            --green-glow: rgba(0, 255, 102, 0.45);
-            --blue-primary: #00bfff;
-            --blue-glow: rgba(0, 191, 255, 0.45);
-            --text-main: #fcfbfa;
-            --text-muted: #baafaa;
-            --card-bg: rgba(20, 14, 10, 0.7);
-            --card-border: rgba(255, 106, 0, 0.15);
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { height: 100vh; overflow: hidden; position: relative; font-family: 'Inter', sans-serif; color: #ff99cc; background: #0a0a0a; }
+        .background, .overlay { position: absolute; inset: 0; }
+        .background { background: url('bg.png') center/cover; filter: brightness(0.75) contrast(1.1) saturate(0.9); z-index: -3; }
+        .overlay { background: rgba(15, 0, 25, 0.78); z-index: -2; }
+        #entrySplash { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0005; cursor: pointer; transition: opacity 0.8s, visibility 0.8s; }
+        #entrySplash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        #entrySplash .splash-bg, #entrySplash .splash-overlay { position: absolute; inset: 0; }
+        #entrySplash .splash-bg { background: radial-gradient(ellipse at 50% 60%, #1a0025 0%, #080010 60%, #000 100%); }
+        #entrySplash .splash-overlay { background: radial-gradient(ellipse at center, rgba(80,0,40,0.55) 0%, rgba(5,0,15,0.92) 100%); }
+        #entrySplash .splash-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; padding: 40px; }
+        #entrySplash .splash-logo { font-size: 5.5rem; font-weight: 300; letter-spacing: 6px; color: #ff99cc; text-shadow: 0 0 60px rgba(255,102,170,0.8), 0 0 120px rgba(255,102,170,0.4), 3px 3px 0 #000; animation: splashGlow 2.5s ease-in-out infinite alternate; }
+        #entrySplash .splash-sub { font-size: 1.1rem; letter-spacing: 5px; color: #cc77aa; text-transform: uppercase; font-weight: 300; }
+        #entrySplash .splash-divider { width: 120px; height: 1px; background: linear-gradient(to right, transparent, #ff66aa, transparent); }
+        #entrySplash .splash-enter { font-size: 0.85rem; letter-spacing: 6px; color: #ffbbdd; text-transform: uppercase; animation: splashBlink 1.8s ease-in-out infinite; }
+        #entrySplash .splash-hearts { font-size: 1.4rem; opacity: 0.7; animation: splashFloat 3s ease-in-out infinite alternate; }
+        @keyframes splashGlow {
+            0% { text-shadow: 0 0 40px rgba(255,102,170,0.6), 0 0 80px rgba(255,102,170,0.3), 3px 3px #000; }
+            100% { text-shadow: 0 0 80px rgba(255,102,170,1), 0 0 160px rgba(255,102,170,0.6), 3px 3px #000; }
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @keyframes splashBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes splashFloat { to { transform: translateY(-8px); } }
+        .content { opacity: 0; transition: opacity 0.8s ease 0.3s; position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .content.visible { opacity: 1; }
+        h1 { font-size: 5.2rem; letter-spacing: 4px; color: #ff99cc; text-shadow: 3px 3px 0 #000, -2px -2px 0 #000; margin-bottom: 8px; font-weight: 300; }
+        .subtitle { font-size: 2.1rem; color: #ff77bb; margin-bottom: 50px; font-weight: 300; }
+        .player { width: 440px; background: rgba(25, 5, 35, 0.96); border: 4px solid #ff66aa; padding: 25px 30px; border-radius: 8px; box-shadow: 0 0 35px rgba(255, 102, 170, 0.5); margin-bottom: 40px; }
+        .now-playing { font-size: 0.85rem; letter-spacing: 3px; margin-bottom: 14px; color: #ffbbdd; text-transform: uppercase; }
+        .song-title { font-size: 1.4rem; margin-bottom: 6px; color: #ff99cc; font-weight: 400; }
+        .song-meta { font-size: 0.9rem; color: #cc77aa; margin-bottom: 4px; }
+        .progress-container { height: 6px; background: #330022; margin: 20px 0; position: relative; cursor: pointer; border-radius: 3px; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(to right, #ff66aa, #cc44ff); transition: width 0.9s linear; border-radius: 3px; }
+        .time { display: flex; justify-content: space-between; font-size: 0.85rem; color: #bb77aa; }
+        .controls { display: flex; justify-content: center; gap: 16px; margin-top: 22px; }
+        button { background: transparent; border: 2px solid #ff66aa; color: #ffccdd; padding: 9px 22px; font-size: 0.88rem; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 1px; transition: background 0.15s, color 0.15s; border-radius: 4px; }
+        button:hover { background: #ff66aa; color: #000; }
+        #ytPlayer { position: fixed; left: 0; top: 0; width: 480px; height: 270px; pointer-events: none; z-index: -10; opacity: 0.001; }
+        #evilSamScreen { display: none; position: fixed; inset: 0; z-index: 500; background: url('evil-sam.jpg') top center/100% 100%; }
+        #evilSamScreen .evil-overlay { position: absolute; inset: 0; background: rgba(80, 0, 0, 0.35); }
+        #evilSamScreen .evil-text { position: absolute; top: 0; left: 0; right: 0; padding: 28px 20px 24px; text-align: center; font-family: 'Inter', sans-serif; font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%); animation: evilPulse 1.6s ease-in-out infinite alternate; }
+        @keyframes evilPulse {
+            0% { text-shadow: 0 0 20px rgba(255,0,0,0.9), 0 0 50px rgba(255,0,0,0.6), 3px 3px 0 #000, -2px -2px 0 #000; }
+            100% { text-shadow: 0 0 40px rgba(255,50,0,1), 0 0 100px rgba(255,0,0,0.9), 3px 3px 0 #000, -2px -2px 0 #000; }
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Animated grid background with orange radial light */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 50% 25%, rgba(255, 106, 0, 0.12) 0%, transparent 65%),
-                linear-gradient(to right, rgba(255, 106, 0, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 106, 0, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 45px 45px, 45px 45px;
-            z-index: -1;
-            animation: gridPulse 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes gridPulse {
-            0% { opacity: 0.85; }
-            100% { opacity: 1; }
-        }
-
-        /* Decorative ambient glow blobs */
-        .ambient-glow-orange {
-            position: absolute;
-            top: -200px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 106, 0, 0.2) 0%, transparent 70%);
-            filter: blur(80px);
-            pointer-events: none;
-            z-index: -2;
-        }
-
-        header {
-            padding: 2rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 106, 0, 0.1);
+        .views-counter {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            background: rgba(20, 5, 25, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo span {
-            color: var(--orange-primary);
-            text-shadow: 0 0 15px var(--orange-glow);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            transition: var(--transition);
-            text-transform: uppercase;
-        }
-
-        .nav-link:hover {
-            color: var(--orange-primary);
-            text-shadow: 0 0 8px var(--orange-glow);
-        }
-
-        main {
-            flex: 1;
-            max-width: 1200px;
-            width: 90%;
-            margin: 4rem auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            margin-bottom: 5rem;
-            max-width: 800px;
-        }
-
-        .hero-badge {
-            background: rgba(255, 106, 0, 0.1);
-            border: 1px solid var(--orange-primary);
-            color: var(--orange-secondary);
-            padding: 6px 16px;
+            border: 1px solid rgba(255, 102, 170, 0.4);
+            padding: 10px 18px;
             border-radius: 30px;
             font-size: 0.85rem;
-            font-weight: 600;
             letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            box-shadow: 0 0 15px rgba(255, 106, 0, 0.15);
-            animation: float 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-5px); }
-        }
-
-        .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(to right, #ff8833, #ff5500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-desc {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            color: var(--text-muted);
-            line-height: 1.6;
-            background: rgba(20, 14, 10, 0.5);
-            border: 1px dashed rgba(255, 106, 0, 0.25);
-            padding: 1.25rem 2rem;
-            border-radius: 12px;
-            box-shadow: inset 0 0 15px rgba(255, 106, 0, 0.02);
-        }
-
-        /* Choice Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 2.5rem;
-            width: 100%;
-            perspective: 1000px;
-        }
-
-        .game-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 3rem 2.5rem;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 420px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        /* Ambient glows inside cards */
-        .card-glow {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            top: -50px;
-            right: -50px;
-            filter: blur(40px);
-            opacity: 0.15;
-            transition: var(--transition);
-        }
-
-        /* VAIL Card specific details */
-        .vail-card {
-            --accent-color: var(--green-primary);
-            --accent-glow: var(--green-glow);
-        }
-        .vail-card .card-glow {
-            background-color: var(--green-primary);
-        }
-
-        /* BREACHERS Card specific details */
-        .breachers-card {
-            --accent-color: var(--blue-primary);
-            --accent-glow: var(--blue-glow);
-        }
-        .breachers-card .card-glow {
-            background-color: var(--blue-primary);
-        }
-
-        /* Hover behaviors */
-        .game-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--accent-color);
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
-        }
-
-        .game-card:hover .card-glow {
-            opacity: 0.35;
-            width: 200px;
-            height: 200px;
-        }
-
-        .card-icon {
-            width: 90px;
-            height: 90px;
-            border-radius: 24px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffbbee;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 32px 0 rgba(255, 102, 170, 0.15), inset 0 0 10px rgba(255, 102, 170, 0.1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            color: var(--accent-color);
-            transition: var(--transition);
-            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
-            overflow: hidden;
+            gap: 8px;
+            pointer-events: none;
         }
-
-        .card-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .views-counter.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
         }
-
-        .game-card:hover .card-icon {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: var(--accent-color);
-            color: var(--text-main);
-            box-shadow: 0 0 20px var(--accent-glow);
-            transform: scale(1.1) rotate(5deg);
+        .views-icon {
+            display: inline-flex;
+            align-items: center;
+            color: #ff66aa;
+            filter: drop-shadow(0 0 4px rgba(255, 102, 170, 0.6));
+            animation: pulseGlow 2s ease-in-out infinite alternate;
         }
-
-        .card-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.25rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            margin-bottom: 1rem;
-            text-align: center;
-            text-transform: uppercase;
-            transition: var(--transition);
+        @keyframes pulseGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(255, 102, 170, 0.4)); }
+            100% { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(255, 102, 170, 0.8)); }
         }
-
-        .game-card:hover .card-title {
-            color: var(--accent-color);
-            text-shadow: 0 0 12px var(--accent-glow);
-        }
-
-        .card-desc {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.5;
-            margin-bottom: 2rem;
-        }
-
-        .card-btn {
+        .spotify-btn {
             background: transparent;
-            border: 1.5px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 10px 24px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border-radius: 30px;
+            border: 2px solid #1DB954;
+            color: #1DB954;
+            padding: 9px 22px;
+            font-size: 0.88rem;
             cursor: pointer;
-            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 1px;
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+            border-radius: 4px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .game-card:hover .card-btn {
-            background: var(--accent-color);
-            color: #000;
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        footer {
-            padding: 3rem 5%;
-            text-align: center;
-            border-top: 1px solid rgba(255, 106, 0, 0.1);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            background: rgba(10, 6, 4, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        footer span {
-            color: var(--orange-primary);
-        }
-
-        /* Discord community section */
-        .community-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 6rem;
-            width: 100%;
-        }
-
-        .community-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .community-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            text-align: center;
-            max-width: 600px;
-            margin-bottom: 2rem;
-        }
-
-        .discord-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
-        }
-
-        .discord-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 340px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .discord-card .discord-glow {
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            bottom: -40px;
-            right: -40px;
-            filter: blur(35px);
-            opacity: 0.1;
-            transition: var(--transition);
-        }
-
-        .mla-discord {
-            --accent-color: var(--orange-primary);
-            --accent-glow: var(--orange-glow);
-        }
-        .mla-discord .discord-glow {
-            background-color: var(--orange-primary);
-        }
-
-        .vml-discord {
-            --accent-color: var(--green-primary);
-            --accent-glow: var(--green-glow);
-        }
-        .vml-discord .discord-glow {
-            background-color: var(--green-primary);
-        }
-
-        .bml-discord {
-            --accent-color: var(--blue-primary);
-            --accent-glow: var(--blue-glow);
-        }
-        .bml-discord .discord-glow {
-            background-color: var(--blue-primary);
-        }
-
-        .discord-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-color);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
-        }
-
-        .discord-card:hover .discord-glow {
-            opacity: 0.25;
-            width: 160px;
-            height: 160px;
-        }
-
-        .discord-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--accent-color);
-            transition: var(--transition);
-            overflow: hidden;
-        }
-
-        .discord-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .discord-card:hover .discord-icon {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: var(--accent-color);
-            color: var(--text-main);
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: scale(1.05);
-        }
-
-        .discord-card-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 0.75rem;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .discord-card:hover .discord-card-title {
-            color: var(--accent-color);
-        }
-
-        .discord-card-desc {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-        }
-
-        .discord-btn {
-            background: transparent;
-            border: 1.5px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 8px 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: var(--transition);
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
-
-        .discord-card:hover .discord-btn {
-            background: var(--accent-color);
+        .spotify-btn:hover {
+            background: #1DB954;
             color: #000;
-            box-shadow: 0 0 12px var(--accent-glow);
+            box-shadow: 0 0 15px rgba(29, 185, 84, 0.4);
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-            .discord-grid {
-                grid-template-columns: 1fr;
-            }
-            header {
-                flex-direction: column;
-                gap: 1.5rem;
-                padding: 1.5rem 5%;
-            }
+        .spotify-btn svg {
+            transition: transform 0.3s ease;
+        }
+        .spotify-btn:hover svg {
+            transform: scale(1.15) rotate(5deg);
         }
     </style>
 </head>
 <body>
-    <div class="ambient-glow-orange"></div>
+    <!-- Full-screen entry splash -->
+    <div id="entrySplash" onclick="enterSite()">
+        <div class="splash-bg"></div>
+        <div class="splash-overlay"></div>
+        <div class="splash-content">
+            <div class="splash-hearts">🌸 ♡ 🌸</div>
+            <div class="splash-logo">aoud.lol</div>
+            <div class="splash-sub">pupsies</div>
+            <div class="splash-divider"></div>
+            <div class="splash-enter">✦ click anywhere to enter ✦</div>
+        </div>
+    </div>
+    <!-- Evil Sam alternate background (1/15 chance) -->
+    <div id="evilSamScreen">
+        <div class="evil-overlay"></div>
+        <div class="evil-text">Evil Sam has the payload</div>
+    </div>
 
-    <header>
-        <a href="index.html" class="logo">
-            <span>MLA</span> ASSOCIATION
-        </a>
-        <nav class="nav-links">
-            <a href="vail.html" class="nav-link" style="--accent-color: var(--green-primary);">VAIL VR</a>
-            <a href="breachers.html" class="nav-link" style="--accent-color: var(--blue-primary);">BREACHERS VR</a>
-        </nav>
-    </header>
+    <div class="background"></div>
+    <div class="overlay"></div>
 
-    <main>
-        <section class="hero">
-            <div class="hero-badge">Official League Portal</div>
-            <h1>Minor League <span>Association</span></h1>
-            <p class="hero-desc">
-                Welcome to the Minor League Association (MLA), the premier amateur esports ecosystem. Whether you're climbing the ranks in VAIL VR or planning strategic operations in Breachers VR, MLA provides a professional platform, dedicated support, and active leagues to showcase and develop your tactical skills.
-            </p>
-        </section>
-
-        <section class="cards-grid">
-            <!-- VAIL VR CARD -->
-            <a href="vail.html" class="game-card vail-card">
-                <div class="card-glow"></div>
-                <div class="card-icon">
-                    <img src="vml-logo.jpg" alt="VML Logo">
-                </div>
-                <div>
-                    <h2 class="card-title">VAIL VR</h2>
-                    <p class="card-desc">Experience hyper-competitive virtual reality tactical shooting in the official MLA division.</p>
-                </div>
-                <span class="card-btn">
-                    Enter Section
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </span>
-            </a>
-
-            <!-- BREACHERS VR CARD -->
-            <a href="breachers.html" class="game-card breachers-card">
-                <div class="card-glow"></div>
-                <div class="card-icon">
-                    <img src="bml-logo.jpg" alt="BML Logo">
-                </div>
-                <div>
-                    <h2 class="card-title">BREACHERS VR</h2>
-                    <p class="card-desc">Coordinate close-quarters combat, breaches, and tactical strategies in the MLA league.</p>
-                </div>
-                <span class="card-btn">
-                    Enter Section
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </span>
-            </a>
-        </section>
-
-        <!-- COMMUNITY SECTION -->
-        <section class="community-section">
-            <h2 class="community-title">Connect with our Community</h2>
-            <p class="community-subtitle">Join our dedicated Discord servers to get support, find matches, and hang out with players.</p>
-            <div class="discord-grid">
-                <!-- MLA Ticket Center -->
-                <div class="discord-card mla-discord">
-                    <div class="discord-glow"></div>
-                    <div class="discord-icon">
-                        <svg width="32" height="32" viewBox="0 0 127.14 96.36" fill="currentColor">
-                            <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.95,54.65,1,77.53a105.53,105.53,0,0,0,32,16.19,79,79,0,0,0,6.77-11,68.17,68.17,0,0,1-10.64-5.12c.9-.66,1.8-1.34,2.65-2a75.58,75.58,0,0,0,71.72,0c.85.71,1.75,1.39,2.65,2a67.89,67.89,0,0,1-10.64,5.12,79.82,79.82,0,0,0,6.77,11,105.34,105.34,0,0,0,32-16.19C130.34,48,124.38,25.2,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.9,46,53.9,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.14,46,96.14,53,91,65.69,84.69,65.69Z"/>
-                        </svg>
-                    </div>
-                    <h3 class="discord-card-title">MLA Ticket Center</h3>
-                    <p class="discord-card-desc">Need support, have questions, or need to contact league officials? Open a support ticket directly on our official staff server.</p>
-                    <a href="https://discord.gg/J8g2njVa6r" target="_blank" class="discord-btn">Join Ticket Center</a>
-                </div>
-
-                <!-- VML (VAIL VR) -->
-                <div class="discord-card vml-discord">
-                    <div class="discord-glow"></div>
-                    <div class="discord-icon">
-                        <img src="vml-logo.jpg" alt="VML Logo">
-                    </div>
-                    <h3 class="discord-card-title">VML (VAIL VR)</h3>
-                    <p class="discord-card-desc">Want to get into VAIL Esports but don't know if your good enough or just want to test the waters? Well VML has you covered! We help train new players and connect them with some of the best people in VAIL Esports!</p>
-                    <a href="https://discord.gg/HZakaeuN4s" target="_blank" class="discord-btn">Join VML Discord</a>
-                </div>
-
-                <!-- BML (Breachers VR) -->
-                <div class="discord-card bml-discord">
-                    <div class="discord-glow"></div>
-                    <div class="discord-icon">
-                        <img src="bml-logo.jpg" alt="BML Logo">
-                    </div>
-                    <h3 class="discord-card-title">BML (Breachers VR)</h3>
-                    <p class="discord-card-desc">Step into tactical close-quarters combat. Connect with Breachers league players, coordinate scrims, and join tournaments to prove your squad's dominance.</p>
-                    <a href="https://discord.gg/tRurckhqgF" target="_blank" class="discord-btn">Join BML Discord</a>
-                </div>
+    <!-- Views counter -->
+    <div class="views-counter" id="viewsCounter">
+        <span class="views-icon">🌸</span>
+        <span id="viewsCount">0</span> views
+    </div>
+    
+    <div class="content" id="mainContent">
+        <h1>aoud.lol</h1>
+        <div class="subtitle">pupsies</div>
+        
+        <div class="player">
+            <div class="now-playing">Now Playing</div>
+            <div class="song-title">why didn't you stop me?</div>
+            <div class="song-meta">pupsies &nbsp;·&nbsp; 1:44</div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
-        </section>
-    </main>
+            
+            <div class="time">
+                <span id="currentTime">0:00</span>
+                <span id="duration">1:44</span>
+            </div>
+            
+            <div class="controls">
+                <button id="playPauseBtn" onclick="togglePlay()">⏸ Pause</button>
+                <button id="volBtn" onclick="toggleBoost()">🔊 Ultra Loud</button>
+                <a id="spotifyLink" href="#" target="_blank" class="spotify-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.076-.67-.135-.746-.47-.077-.337.135-.67.472-.747 3.856-.88 7.15-.506 9.822 1.13.295.18.387.563.205.862zm1.224-2.723c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.075-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.666-1.112 8.226-.574 11.34 1.34.368.228.488.708.26 1.074zm.106-2.833C14.39 8.71 8.442 8.513 5.003 9.556c-.53.16-1.09-.14-1.25-.67-.16-.53.14-1.09.67-1.25 3.966-1.203 10.53-.98 14.6 1.436.477.284.633.9.35 1.378-.284.477-.9.633-1.377.35z"/>
+                    </svg>
+                    Spotify
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--
+        autoplay=1  → starts playing immediately (muted, so browser allows it)
+        mute=1      → muted = browser allows autoplay
+        loop=1      → loops forever
+        controls=0  → hide YouTube UI
+        enablejsapi=1 → lets us send postMessage commands
+    -->
+    <div id="ytPlayer"></div>
+    <script>
+        // Load the YouTube IFrame Player API asynchronously
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
-    <footer>
-        <p>&copy; 2026 <span>Minor League Association</span>. All rights reserved.</p>
-    </footer>
+        const playlist = [
+            { "title": "Caramelldansen", "artist": "Caramella Girls", "ytId": "PDJLvF1dUek" },
+            { "title": "Renai Circulation (English Cover) [2012 TV Size]", "artist": "Lizz Robinett, L-Train, Y. Chang", "ytId": "o874A-IsrvQ" },
+            { "title": "Pretty Scene Girl!", "artist": "Clover!, DulaWry", "ytId": "P8F1RjcWLjM" },
+            { "title": "doodle", "artist": "Zachz Winner", "ytId": "DYgER2Tq50o" },
+            { "title": "I'm so fucked up please help me", "artist": "Rebzyyx", "ytId": "hWm5PdmPgbs" },
+            { "title": "hunter eyes", "artist": "laydownrot", "ytId": "AVPbuiJ3-xQ" },
+            { "title": "Lucky", "artist": "Lucky Twice", "ytId": "2UuXld2s6g0" },
+            { "title": "1tap", "artist": "Chanelfather", "ytId": "1GhwgjNN1H0" },
+            { "title": "SugarCrash!", "artist": "ElyOtto", "ytId": "6uaq8GJJxAQ" },
+            { "title": "LESBIAN PONIES WITH WEAPONS", "artist": "Vylet Pony", "ytId": "UCAisUe6-VA" },
+            { "title": "Toxic Love!", "artist": "Clover!, NXTY", "ytId": "MVypbjxD6GU" },
+            { "title": "pretty lil psycho", "artist": "Clover!, disoc8", "ytId": "B5lx9ecnpxw" },
+            { "title": "It's Not Like I Like You!!", "artist": "Static-P", "ytId": "tOzOD-82mW0" },
+            { "title": "#goonnshit", "artist": "Kevinhilfiger, osquinn", "ytId": "NVJNzydEefc" },
+            { "title": "nostalgia will kill me one day", "artist": "rufflws, oktxy, scarby", "ytId": "D9tBmUXTGtI" },
+            { "title": "makes you happy", "artist": "hoshie star, Kaneda7, Rebzyyx", "ytId": "O9_vX7vMkes" },
+            { "title": "do you like it", "artist": "hoshie star, zeija", "ytId": "F5xRvbYrqYE" },
+            { "title": "kiss me!", "artist": "txtsu", "ytId": "W-BqNjA6W0c" },
+            { "title": "feels good", "artist": "yen archive, aidenchrist", "ytId": "yhzu9ebHcYQ" },
+            { "title": "Bright", "artist": "saturn", "ytId": "4E-p2UzGT9I" },
+            { "title": "Faneto", "artist": "Chief Keef", "ytId": "XuEx6lNHZjM" },
+            { "title": "qpid", "artist": "saturn", "ytId": "7jJByBGCbz0" },
+            { "title": "letz 5hake", "artist": "saturn", "ytId": "_AJUOBnMDzI" },
+            { "title": "i hate it here", "artist": "osquinn", "ytId": "5IWw8ox6u40" },
+            { "title": "meangirls", "artist": "saturn", "ytId": "EgEar9iBFCU" },
+            { "title": "leaveamsg", "artist": "morgue", "ytId": "qNU6aISOOjE" },
+            { "title": "Days", "artist": "saturn, osquinn", "ytId": "xHR-wHSLga4" },
+            { "title": "eat ur heart", "artist": "luvwillow", "ytId": "oLriHy6zaO8" },
+            { "title": "who was", "artist": "Wido", "ytId": "4u8Evmukllk" },
+            { "title": "Less Intro", "artist": "saturn", "ytId": "0YSBgaTOHOE" }
+        ];
+
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volBtn = document.getElementById('volBtn');
+        
+        let player, isPlaying = true, isMuted = true, isBoosted = false, currentTrack = null, playedTracks = [];
+
+        function selectRandomTrack() {
+            if (!playlist.length) return null;
+            if (playedTracks.length >= playlist.length) playedTracks = [];
+            const avail = playlist.filter(t => !playedTracks.includes(t.ytId));
+            const track = avail[Math.floor(Math.random() * avail.length)];
+            playedTracks.push(track.ytId);
+            currentTrack = track;
+
+            document.querySelector('.song-title').textContent = track.title;
+            document.querySelector('.song-meta').innerHTML = `${track.artist} &nbsp;·&nbsp; 0:00`;
+            currentTimeEl.textContent = '0:00';
+            document.getElementById('duration').textContent = '0:00';
+            progressBar.style.width = '0%';
+
+            // Update Spotify link
+            const spotifyLink = document.getElementById('spotifyLink');
+            if (spotifyLink) {
+                spotifyLink.href = `https://open.spotify.com/search/${encodeURIComponent(track.artist + ' ' + track.title)}`;
+            }
+
+            return track;
+        }
+
+        function onYouTubeIframeAPIReady() {
+            const track = selectRandomTrack();
+            if (!track) return;
+            player = new YT.Player('ytPlayer', {
+                height: '270', width: '480', videoId: track.ytId,
+                playerVars: { autoplay: 1, mute: 1, controls: 0, enablejsapi: 1, rel: 0, modestbranding: 1 },
+                events: { 
+                    onReady: () => {
+                        isPlaying = true;
+                        playPauseBtn.textContent = '⏸ Pause';
+                        if (!isMuted) {
+                            if (typeof player.unMute === 'function') player.unMute();
+                            if (typeof player.setVolume === 'function') player.setVolume(100);
+                            if (typeof player.playVideo === 'function') player.playVideo();
+                        }
+                    }, 
+                    onStateChange: (e) => {
+                        if (e.data === YT.PlayerState.ENDED) {
+                            playRandomTrack();
+                        }
+                    }, 
+                    onError: () => playRandomTrack() 
+                }
+            });
+        }
+
+        function playRandomTrack() {
+            const track = selectRandomTrack();
+            if (!track) return;
+
+            if (player && typeof player.loadVideoById === 'function') {
+                player.loadVideoById({ videoId: track.ytId, startSeconds: 0 });
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸ Pause';
+                if (isMuted) {
+                    if (typeof player.mute === 'function') player.mute();
+                } else {
+                    if (typeof player.unMute === 'function') player.unMute();
+                    if (typeof player.setVolume === 'function') player.setVolume(100);
+                    if (typeof player.playVideo === 'function') player.playVideo();
+                }
+            }
+        }
+
+        function loadViewsCounter() {
+            const viewsEl = document.getElementById('viewsCount');
+            
+            fetch('https://api.counterapi.dev/v1/aoud.lol/views/up')
+                .then(res => {
+                    if (!res.ok) throw new Error('API error');
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && typeof data.value === 'number') {
+                        viewsEl.textContent = data.value.toLocaleString();
+                    } else {
+                        throw new Error('Invalid response structure');
+                    }
+                })
+                .catch(err => {
+                    console.warn("CounterAPI load failed, falling back to simulated count:", err);
+                    let localViews = localStorage.getItem('simulated_views');
+                    if (!localViews) {
+                        localViews = Math.floor(Math.random() * 500) + 1240;
+                    } else {
+                        localViews = parseInt(localViews, 10) + 1;
+                    }
+                    localStorage.setItem('simulated_views', localViews);
+                    viewsEl.textContent = localViews.toLocaleString();
+                });
+        }
+
+        function enterSite() {
+            document.getElementById('entrySplash').classList.add('hidden');
+            const isEvil = localStorage.getItem('sam_screens_disabled') !== 'true' && Math.random() < 1/15;
+            if (isEvil) {
+                document.getElementById('evilSamScreen').style.display = 'block';
+            } else {
+                document.getElementById('mainContent').classList.add('visible');
+                document.getElementById('viewsCounter').classList.add('visible');
+                loadViewsCounter();
+                volBtn.textContent = '🔇 Normal';
+            }
+            isMuted = false;
+            isBoosted = true;
+            if (player) {
+                if (typeof player.unMute === 'function') player.unMute();
+                if (typeof player.setVolume === 'function') player.setVolume(100);
+                if (typeof player.playVideo === 'function') player.playVideo();
+            }
+        }
+
+        function togglePlay() {
+            if (!player?.pauseVideo) return;
+            isPlaying = !isPlaying;
+            isPlaying ? player.playVideo() : player.pauseVideo();
+            playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+        }
+
+        function toggleBoost() {
+            if (!player?.setVolume) return;
+            isBoosted = !isBoosted;
+            player.setVolume(isBoosted ? 100 : 50);
+            volBtn.textContent = isBoosted ? '🔇 Normal' : '🔊 Ultra Loud';
+        }
+
+        function formatTime(s) {
+            if (isNaN(s) || s === null) return "0:00";
+            return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+        }
+
+        setInterval(() => {
+            if (player?.getCurrentTime && isPlaying) {
+                const cur = player.getCurrentTime(), dur = player.getDuration();
+                if (dur > 0) {
+                    progressBar.style.width = (cur / dur * 100) + '%';
+                    currentTimeEl.textContent = formatTime(cur);
+                    document.getElementById('duration').textContent = formatTime(dur);
+                    document.querySelector('.song-meta').innerHTML = `${currentTrack?.artist} &nbsp;·&nbsp; ${formatTime(dur)}`;
+                }
+            }
+        }, 500);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F10') {
+                e.preventDefault();
+                if (localStorage.getItem('sam_screens_disabled') === 'true') return alert("Sam-related screens are disabled.");
+                document.getElementById('entrySplash').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('visible');
+                document.getElementById('evilSamScreen').style.display = 'block';
+                isMuted = false;
+                player?.unMute?.();
+                player?.setVolume?.(100);
+            } else if (e.key === 'Insert') {
+                e.preventDefault();
+                if (localStorage.getItem('sam_screens_disabled') === 'true') {
+                    localStorage.removeItem('sam_screens_disabled');
+                    alert("Sam-related screens have been re-enabled.");
+                } else {
+                    localStorage.setItem('sam_screens_disabled', 'true');
+                    const evil = document.getElementById('evilSamScreen');
+                    if (evil.style.display === 'block') {
+                        evil.style.display = 'none';
+                        document.getElementById('mainContent').classList.add('visible');
+                    }
+                    alert("Sam-related screens have been disabled.");
+                }
+            }
+        });
+
+        document.getElementById('progressContainer').addEventListener('click', function(e) {
+            if (player?.getDuration) {
+                const ratio = (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth;
+                player.seekTo(ratio * player.getDuration(), true);
+            }
+        });
+    </script>
 </body>
 </html>
